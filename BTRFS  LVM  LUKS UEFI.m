@@ -568,8 +568,8 @@ pacstrap /mnt btrfs-progs
 pacstrap /mnt lvm2 cryptsetup
 # 📦 amd-ucode — микрокод для процессоров AMD (~3 МБ)
 # 📦 iucode-tool — утилита для управления микрокодом Intel
-# ⚠️ Для Intel замените amd-ucode на intel-ucode
-pacstrap /mnt amd-ucode iucode-tool
+# ⚠️ Для Intel замените amd-ucode на intel-ucode iucode-tool
+pacstrap /mnt amd-ucode
 # 📦 memtest86+-efi — тест оперативной памяти для UEFI (~2 МБ)
 pacstrap /mnt memtest86+-efi
 # 📦 nano — простой текстовый редактор для новичков (~0.3 МБ)
