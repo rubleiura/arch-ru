@@ -1220,8 +1220,8 @@ rm -rf yay
 clear
 sudo pacman -Syy
 sudo pacman -Sy --noconfirm snapper snap-pac btrfsmaintenance btrfs-assistant
-yay -Sy
-yay -S --noconfirm snapper-support snapper-tools
+yay -Syy
+yay -Sy --noconfirm snapper-support snapper-tools
 # 🧹 Очистка экрана терминала
 clear
 sudo systemctl enable snapper-timeline.timer
