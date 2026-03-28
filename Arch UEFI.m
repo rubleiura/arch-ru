@@ -534,8 +534,8 @@ pacstrap /mnt base base-devel
 pacstrap /mnt btrfs-progs
 # 📦 amd-ucode — микрокод для процессоров AMD (~3 МБ)
 # 📦 iucode-tool — утилита для управления микрокодом Intel
-# ⚠️ Для Intel замените amd-ucode на intel-ucode
-pacstrap /mnt amd-ucode iucode-tool
+# ⚠️ Для Intel замените amd-ucode на intel-ucode iucode-tool
+pacstrap /mnt amd-ucode
 # 📦 memtest86+-efi — тест оперативной памяти для UEFI (~2 МБ)
 # ⚠️ В UEFI версии используется memtest86+-efi (с -efi)
 pacstrap /mnt memtest86+-efi
