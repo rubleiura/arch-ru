@@ -869,7 +869,8 @@ xdg-user-dirs-update
 pacman -Sy --noconfirm udisks2 udiskie polkit
 # 📦 pipewire-* — аудио/видео сервер (современный)
 # 📦 alsa-utils — утилиты ALSA (alsamixer)
-pacman -Sy --noconfirm pipewire-alsa pipewire-pulse pipewire-jack pipewire-v4l2 pipewire-zeroconf alsa-utils
+# 📦 sof-firmware — исходный код прошивки для DSP-чипов, для обработки звука
+pacman -Sy --noconfirm pipewire-alsa pipewire-pulse pipewire-jack pipewire-v4l2 pipewire-zeroconf alsa-utils sof-firmware
 # 📦 wireplumber — менеджер сессий PipeWire
 pacman -Sy --noconfirm wireplumber
 systemctl --global enable pipewire pipewire-pulse wireplumber
