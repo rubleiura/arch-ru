@@ -957,7 +957,7 @@ systemctl enable switcheroo-control.service
 #Для Intel/AMD: Применяются общие настройки KMS.
 #Для NVIDIA: КРИТИЧЕСКИ ВАЖНО для работы Wayland и энергосбережения!
 #1. Добавить модули NVIDIA в mkinitcpio.conf (для ранней загрузки)
-sed -i 's/^MODULES=(\(.*\))/MODULES=(\1 nvidia nvidia_modeset nvidia_uvm nvidia_drm)/' /etc/mkinitcpio.con
+sed -i 's/^MODULES=(\(.*\))/MODULES=(\1 nvidia nvidia_modeset nvidia_uvm nvidia_drm)/' /etc/mkinitcpio.conf
 #2. Добавить параметр ядра nvidia-drm.modeset=1 (включает поддержку Wayland)
 sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 nvidia-drm.modeset=1"/' /etc/default/grub
 #3. Конфигурация модулей (modprobe) — ТОЛЬКО ДЛЯ NVIDIA
