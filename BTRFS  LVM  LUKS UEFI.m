@@ -261,8 +261,8 @@ setfont cyr-sun16
 # ⏰ Синхронизация системного времени через NTP
 timedatectl set-ntp true
 # 🌐 Включение русской и английской локали в locale.gen
-sed -i "s/#ru_RU/ru_RU/" /etc/locale.gen
-sed -i "s/#en_US/en_US/" /etc/locale.gen
+sed -i "s/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/" /etc/locale.gen
+sed -i "s/#ru_RU.UTF-8 UTF-8/ru_RU.UTF-8 UTF-8/" /etc/locale.gen
 # locale-gen — генерация выбранных локалей
 locale-gen
 # export LANG — установка основной локали системы
