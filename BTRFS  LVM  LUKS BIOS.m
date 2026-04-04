@@ -872,7 +872,7 @@ sed -i "s/MODULES=()/MODULES=(btrfs dm_mod dm_crypt)/" /etc/mkinitcpio.conf
 # --target=i386-pc — для BIOS систем (не UEFI!)
 # --recheck — перепроверить устройство
 # /dev/sda — весь диск, а не раздел!
-grub-install --target=i386-pc --recheck /dev/sda
+grub-install --target=i386-pc --recheck /dev/sdx
 # 🔍 Получение UUID LUKS контейнера для параметров ядра
 CRYPT_UUID=$(blkid -s UUID -o value /dev/sda3)
 # 🔍 Получение UUID swap раздела для параметров ядра
