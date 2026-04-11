@@ -70,39 +70,25 @@
 
 
 #################################################################
-# 🔍  БЛОК 0: НАСТРОЙКА ЛОКАЦИИ ЗЕРКАЛ (Mirrors)
+# 🔍  [LIVE] БЛОК 0: НАСТРОЙКА ЛОКАЦИИ ЗЕРКАЛ (Mirrors)
 #################################################################
-# ℹ️ Зачем:
-# 💡 1. Простой путь к быстрым и надежным зеркалам Arch Linux
-# 💡 2. Быстрая оптимизация списка зеркал
-# ❗ Важно: Это самая важная настройка, от которой зависит качество
-#    и скорость установки.
-# 💡 Показывает: Список 10 стран, которые ближе всего от местоположения
-#    пользователя.
+# ℹ️ Зачем: Динамический подбор 10 ближайших стран для максимальной
+#    скорости загрузки пакетов. Работает в любой точке мира.
+# 💡 Принцип: Скрипт определяет ближайшие страны → вы заменяете
+#    переменную Russia на полученный список → reflector использует
+#    только самые быстрые зеркала для вашей локации.
 #################################################################
-
-# 🧹 Очистка экрана для лучшего отображения
+# 🧹 Очистка экрана терминала
 clear
-
-# 📦 Обновление базы пакетов
-sudo pacman -Syy
-
-# 📦 Установка необходимых зависимостей Python
-# python — язык программирования для запуска скрипта
-# python-requests — библиотека для HTTPS запросов к API
-sudo pacman -Sy --needed --noconfirm python python-requests || {
-    echo "❌ Ошибка установки зависимостей. Проверьте подключение к интернету."
-    exit 1
-}
-
-# 🔍 СОЗДАНИЕ СКРИПТА
-# Создание файла скрипта light_countries.py для определения местоположения
+#------------------------------------------------------------------------------
+# ШАГ 1: СОЗДАНИЕ СКРИПТА ОПРЕДЕЛЕНИЯ СТРАН
+#------------------------------------------------------------------------------
+# 🐍 Создание Python-скрипта для расчета расстояний до столиц.
+# Использует только стандартные библиотеки (urllib, json, math).
 cat > light_countries.py << 'EOF'
-import requests
-import math
-import sys
+#!/usr/bin/env python3
+import json, urllib.request, math, sys
 
-# --- БАЗА ДАННЫХ СТОЛИЦ (Координаты: Широта, Долгота) ---
 CAPITALS = {
     "Afghanistan": (34.5553, 69.2075), "Albania": (41.3275, 19.8187), "Algeria": (36.7538, 3.0588),
     "Andorra": (42.5063, 1.5218), "Angola": (-8.8390, 13.2894), "Argentina": (-34.6037, -58.3816),
@@ -172,113 +158,108 @@ CAPITALS = {
 }
 
 def haversine(lat1, lon1, lat2, lon2):
-    """Вычисление расстояния по формуле Haversine"""
-    R = 6371  # Радиус Земли в км
-    phi1, phi2 = math.radians(lat1), math.radians(lat2)
-    d_phi = math.radians(lat2 - lat1)
-    d_lambda = math.radians(lon2 - lon1)
-    a = math.sin(d_phi/2)**2 + math.cos(phi1)*math.cos(phi2)*math.sin(d_lambda/2)**2
-    return 2 * R * math.atan2(math.sqrt(a), math.sqrt(1-a))
+    R = 6371.0
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = math.sin(dlat/2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2)**2
+    return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
 
 def get_ip_location():
-    """Определение местоположения по IP с использованием HTTPS и fallback"""
-    print("🌐 Определение местоположения по IP...")
-
-    # ✅ Исправлено: Используем ipapi.co с бесплатным HTTPS
     apis = [
-        ('https://ipapi.co/json/', 'ipapi.co'),
-        ('https://ipinfo.io/json', 'ipinfo.io'),
+        ("https://ipapi.co/json/", "ipapi.co"),
+        ("https://ipinfo.io/json", "ipinfo.io"),
     ]
-
     for api_url, api_name in apis:
         try:
             print(f"  🔄 Пробуем {api_name}...")
-            resp = requests.get(api_url, timeout=5)
-            data = resp.json()
+            with urllib.request.urlopen(api_url, timeout=5) as resp:
+                data = json.loads(resp.read().decode())
 
-            # Обработка разных форматов ответов
-            if api_name == 'ipapi.co':
-                if 'error' in data:
-                    continue
-                lat = float(data.get('latitude', 0))
-                lon = float(data.get('longitude', 0))
-                country = data.get('country_name', 'Unknown')
-            elif api_name == 'ipinfo.io':
-                if 'bogon' in data:
-                    continue
-                loc = data.get('loc', '0,0').split(',')
-                lat = float(loc[0])
-                lon = float(loc[1])
-                country = data.get('country', 'Unknown')
-            else:
-                continue
+                # ✅ ИСПРАВЛЕНО: Добавлена переменная data в условия
+                if api_name == "ipapi.co":
+                    if "error" in data:
+                        continue
+                    if "latitude" not in data or "longitude" not in data:
+                        continue
+                    lat = float(data.get("latitude", 0))
+                    lon = float(data.get("longitude", 0))
+                    country = data.get("country_name", "Unknown")
 
-            if lat != 0 and lon != 0:
-                print(f"  ✅ Использован API: {api_name}")
-                return lat, lon, country
+                elif api_name == "ipinfo.io":
+                    if "bogon" in data:
+                        continue
+                    if "loc" not in data:
+                        continue
+                    loc = data.get("loc", "0,0").split(",")
+                    lat = float(loc[0])
+                    lon = float(loc[1])
+                    country = data.get("country", "Unknown")
+                else:
+                    continue
+
+                if lat != 0 and lon != 0:
+                    print(f"  ✅ Использован API: {api_name}")
+                    return lat, lon, country
 
         except Exception as e:
             print(f"  ⚠️ {api_name} недоступен: {e}")
             continue
 
-    print("❌ Все API недоступны")
-    print("💡 Проверьте подключение к интернету или попробуйте позже")
+    print("❌ Все API недоступны. Проверьте подключение к интернету.")
     sys.exit(1)
 
 def main():
+    print("🌐 Определение местоположения по IP...")
     my_lat, my_lon, my_country = get_ip_location()
     print(f"✅ Вы находитесь: {my_country} ({my_lat:.4f}, {my_lon:.4f})\n")
 
     distances = []
     for country, (cap_lat, cap_lon) in CAPITALS.items():
-        # Исключаем свою страну из списка
         if country == my_country:
             continue
         dist = haversine(my_lat, my_lon, cap_lat, cap_lon)
         distances.append((country, dist))
 
-    # Сортировка по расстоянию
     distances.sort(key=lambda x: x[1])
 
-    print(f"{'#':<3} {'Страна':<25} {'Расстояние до столицы (км)':<10}")
+    print(f"{'#':<3} {'Страна':<25} {'Расстояние (км)':<10}")
     print("-" * 45)
-
     for i, (country, dist) in enumerate(distances[:10], 1):
-        print(f"{i:<3} {country:<25} {dist:.2f}")
-
+        print(f"{i:<3} {country:<25} {dist:.0f}")
     print("-" * 45)
-    print("✅ Готово! (Легкая версия)")
+    print("✅ Готово! Используйте список выше для настройки.")
 
 if __name__ == "__main__":
     main()
 EOF
-
-# 🚀 ЗАПУСК И ВЕРИФИКАЦИЯ
-# ⚡ Запуск скрипта для определения ближайших стран
+#------------------------------------------------------------------------------
+# ШАГ 2: ЗАПУСК СКРИПТА И ПОЛУЧЕНИЕ СПИСКА
+#------------------------------------------------------------------------------
+# 🚀 Запуск скрипта для определения ближайших стран.
 clear
+echo "  "
+echo "  "
 python light_countries.py
-
 # 🧹 Удаление скрипта после использования
 rm -f ~/light_countries.py
-
-echo " "
-echo "#################################################################"
-echo "## 🧭 10 БЛИЖАЙШИХ СТРАН ОПРЕДЕЛЕНЫ                             ##"
-echo "#################################################################"
-echo " "
-echo "#################################################################"
-echo "## ⚠️ ВНИМАНИЕ!                                                ##"
-echo "## 📌 ДЛЯ ПРАВИЛЬНОЙ РАБОТЫ МАКЕТА ЗАМЕНИТЕ ПЕРЕМЕННУЮ Russia  ##"
-echo "##   ЕСЛИ ВЫ ЖИВЁТЕ В ДРУГОЙ СТРАНЕ И ДОБАВЬТЕ БЛИЗКИЕ СТРАНЫ  ##"
-echo "#################################################################"
-echo " "
-echo "✅ ВСЕ ДЕЙСТВИЯ ВЫПОЛНЕНЫ."
-echo "⚠️  Составьте по порядку список стран, через запятую, которые ближе всего."
-echo "📌  Замените переменную Russia на результат из скрипта."
-echo "⚙️  ПРИМЕР: Russia > Russia,Estonia,Finland,Latvia,Lithuania,Belarus,Sweden"
-echo "# ➡️ ПРОДОЛЖИТЕ УСТАНОВКУ:"
-echo " "
-
+echo "  "
+echo "################################################################# "
+echo "## 🧭 10 БЛИЖАЙШИХ СТРАН ОПРЕДЕЛЕНЫ                             ## "
+echo "################################################################# "
+echo "  "
+echo "################################################################# "
+echo "## ⚠️ ВНИМАНИЕ!                                                ## "
+echo "## 📌 ДЛЯ ПРАВИЛЬНОЙ РАБОТЫ МАКЕТА ЗАМЕНИТЕ ПЕРЕМЕННУЮ Russia  ## "
+echo "##   ЕСЛИ ВЫ ЖИВЁТЕ В ДРУГОЙ СТРАНЕ И ДОБАВЬТЕ БЛИЗКИЕ СТРАНЫ  ## "
+echo "################################################################# "
+echo "  "
+echo "✅ ВСЕ ДЕЙСТВИЯ ВЫПОЛНЕНЫ. "
+echo "⚠️  Составьте по порядку список стран, через запятую, которые ближе всего. "
+echo "📌  Замените переменную Russia на результат из скрипта. "
+echo "⚙️  ПРИМЕР: Russia  > Russia,Estonia,Finland,Latvia,Lithuania,Belarus,Sweden "
+echo "# ➡️ ПРОДОЛЖИТЕ УСТАНОВКУ: "
+echo "  "
+#################################################################
 
 
 
