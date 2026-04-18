@@ -45,7 +45,6 @@
 3. **Клонирование:**
    ```bash
    git clone https://github.com/rubleiura/arch-ru
-   cd arch-ru
    ```
 4. **Редактирование:**
    - Откройте нужный файл (например, `Arch UEFI.m`) в графическом редакторе:
