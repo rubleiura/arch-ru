@@ -1066,7 +1066,7 @@ pacman -Sy --noconfirm haveged wget usbutils lsof dmidecode dialog zip unzip unr
 # 📦 rsync — синхронизация файлов.
 # 📦 git — система контроля версий.
 # 📦 fwupd — обновление прошивок оборудования.
-pacman -Sy --noconfirm neovim ripgrep bat zstd lz4 btop smartmontools lm_sensors rsync git fwupd
+pacman -Sy --noconfirm neovim ripgrep bat zstd lz4 smartmontools lm_sensors rsync git fwupd
 #------------------------------------------------------------------------------
 # ШАГ 3: ПОДДЕРЖКА ФАЙЛОВЫХ СИСТЕМ И СЕТЕЙ
 #------------------------------------------------------------------------------
