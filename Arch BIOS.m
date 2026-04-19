@@ -305,7 +305,7 @@ echo " "
 # 🔍  [LIVE] БЛОК 3: ДИАГНОСТИКА ОБОРУДОВАНИЯ
 #################################################################
 # ℹ️ Зачем: Вывод информации об оборудовании для настройки переменных.
-# ❗ Важно: Сравните вывод с переменными в БЛОКЕ 3.
+# ❗ Важно: Сравните вывод с переменными в БЛОКЕ 4.
 # 💡 Показывает: CPU, MB, диски, рекомендации по монтированию FSTAB.
 #################################################################
 clear
@@ -323,7 +323,7 @@ echo " "
 echo " "
 # 🔍 Определение производителя процессора
 # lshw -C cpu — информация о процессоре
-# ⚠️ Для Intel замените 'amd-ucode' на 'intel-ucode' в Блоке 6
+# ⚠️ Для Intel замените 'amd-ucode' на 'intel-ucode' в Блоке 4
 echo "Замените или оставьте переменную amd-ucode в зависимости от типа вашего процессора"
 echo "Для Intel: замените 'amd-ucode' на 'intel-ucode'"
 echo " "
@@ -361,10 +361,10 @@ DEVICE_PATH="/dev/$DEVICE";
 [[ ! -b "$DEVICE_PATH" ]] && continue;
 ROTA=$(lsblk -d -o ROTA --noheadings "$DEVICE_PATH" 2>/dev/null | awk '{print $1}');
 if [[ "$ROTA" == "1" ]]; then
-DISK_TYPE="HDD (Замените 'defaults' в БЛОКЕ 3 на):";
+DISK_TYPE="HDD (Замените 'defaults' в БЛОКЕ 4 на):";
 MOUNT_OPTIONS="noatime,space_cache=v2,compress=zstd:3,autodefrag";
 else
-DISK_TYPE="SSD (Замените 'defaults' в БЛОКЕ 3 на):";
+DISK_TYPE="SSD (Замените 'defaults' в БЛОКЕ 4 на):";
 MOUNT_OPTIONS="ssd,noatime,space_cache=v2,compress=zstd:3,discard=async";
 fi;
 echo   "╔══════════════════════════════════════════════════════════════════════════════════╗";
