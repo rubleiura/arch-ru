@@ -1621,7 +1621,7 @@ exit
 # 🧹 Очистка экрана терминала
 clear
 # 📦 Установка LXDE и компонентов
-pacman -Sy --noconfirm lxde openbox mousepad thunar-archive-plugin udiskie xfce4-notifyd dunst picom
+pacman -Sy --noconfirm lxde featherpad thunar-archive-plugin udiskie xfce4-notifyd dunst picom
 # 📦 Сетевые апплеты
 pacman -Sy --noconfirm network-manager-applet blueman
 # 📦 Кодеки и темы
