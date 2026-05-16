@@ -440,6 +440,19 @@ sudo gpasswd -a $USER vboxusers
 # 10.5 (Опционально) Отключение уведомлений для Wayland
 VBoxManage setextradata global GUI/ShowNotifications 0
 
+# !!! ВАЖНО: Если вы используете Wayland (например, KDE Plasma под Wayland),
+# уведомления VirtualBox могут быть неинтерактивны (нельзя закрыть кликом).
+# Чтобы отключить эти уведомления, выполните следующие команды после установки
+# и перезапустите VirtualBox:
+# Отключить мини-тулбар
+VBoxManage setextradata global GUI/ShowMiniToolBar 0
+# Отключить уведомления о пользовательском вводе
+VBoxManage setextradata global GUI/NotifyAboutUserInput 0
+VBoxManage setextradata global GUI/NotifyAbout3DUserInput 0
+# Отключить значки и общие уведомления (если опция существует)
+VBoxManage setextradata global GUI/ShowNotificationIcons 0
+VBoxManage setextradata global GUI/ShowNotifications 0
+
 
 
 
