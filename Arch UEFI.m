@@ -316,8 +316,6 @@ pacman -Syy
 pacman -Sy --noconfirm inxi
 # 📦 lshw — подробная информация об оборудовании (~0.3 МБ)
 pacman -Sy --noconfirm lshw
-# Включение и запуск службы haveged
-systemctl enable haveged.service --now
 clear
 echo " "
 echo "#####################################################"
