@@ -1069,6 +1069,17 @@ sed -i "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=${CRYPT_U
 # 📋 GRUB_ENABLE_CRYPTODISK — ОТКЛЮЧЕН
 # Для BIOS с отдельным /boot это не требуется.
 sed -i 's|^GRUB_ENABLE_CRYPTODISK=.*|#GRUB_ENABLE_CRYPTODISK=y|' /etc/default/grub
+# 📋 Добавление пунктов меню включение и перезагрузка системы 
+sudo tee -a /etc/grub.d/40_custom << 'EOF'
+
+menuentry "Выключение системы" {
+    halt
+}
+
+menuentry "Перезагрузка системы" {
+    reboot
+}
+EOF
 # 📋 Настройка grub-btrfs для отображения снапшотов
 sed -i 's|#GRUB_BTRFS_SUBMENUNAME=.*|GRUB_BTRFS_SUBMENUNAME="Arch Linux snapshots"|' /etc/default/grub-btrfs/config
 sed -i 's|#GRUB_BTRFS_TITLE_FORMAT=.*|GRUB_BTRFS_TITLE_FORMAT=("description" "date")|' /etc/default/grub-btrfs/config
