@@ -1056,7 +1056,7 @@ sed -i "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=${CRYPT_U
 # 📋 Включение поддержки шифрованного диска в GRUB
 sed -i 's|^# GRUB_ENABLE_CRYPTODISK=.*|GRUB_ENABLE_CRYPTODISK=y|' /etc/default/grub
 # 📋 Добавление пунктов меню включение и перезагрузка системы 
-sudo tee -a /etc/grub.d/40_custom << 'EOF'
+tee -a /etc/grub.d/40_custom << 'EOF'
 
 menuentry "Выключение системы" {
     halt
