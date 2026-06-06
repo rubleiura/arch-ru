@@ -1025,7 +1025,7 @@ sed -i 's|^GRUB_CMDLINE_LINUX_DEFAULT=.*|GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 
 # ✅ Внутренние кавычки экранированы для безопасности.
 sed -i "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"resume=UUID=${SWAP_UUID}\"|" /etc/default/grub
 # 📋 Добавление пунктов меню включение и перезагрузка системы 
-sudo tee -a /etc/grub.d/40_custom << 'EOF'
+tee -a /etc/grub.d/40_custom << 'EOF'
 
 menuentry "Выключение системы" {
     halt
