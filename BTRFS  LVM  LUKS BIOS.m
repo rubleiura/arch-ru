@@ -1070,7 +1070,7 @@ sed -i "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=${CRYPT_U
 # Для BIOS с отдельным /boot это не требуется.
 sed -i 's|^GRUB_ENABLE_CRYPTODISK=.*|#GRUB_ENABLE_CRYPTODISK=y|' /etc/default/grub
 # 📋 Добавление пунктов меню включение и перезагрузка системы 
-sudo tee -a /etc/grub.d/40_custom << 'EOF'
+tee -a /etc/grub.d/40_custom << 'EOF'
 
 menuentry "Выключение системы" {
     halt
