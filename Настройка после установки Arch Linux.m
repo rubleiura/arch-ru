@@ -314,7 +314,7 @@ systemctl --user restart pipewire
 # ✅ ИСПРАВЛЕНО: Все описания закомментированы и отделены от команд.
 
 # 6.1 Базовые утилиты
-sudo pacman -S --noconfirm doublecmd-qt6 vlc vlc-plugins-all htop cpu-x gparted qbittorrent libreoffice-still-ru hardinfo2 fastfetch hyfetch inxi btop
+sudo pacman -S --noconfirm doublecmd-qt6 vlc vlc-plugins-all htop cpu-x gparted qbittorrent libreoffice-still-ru hardinfo2 inxi btop
 # 6.2 Включение сервиса hardinfo2
 sudo systemctl enable --now hardinfo2.service
 # 6.3 Загрузка модулей для датчиков
@@ -338,32 +338,140 @@ yay -S --noconfirm grub-customizer grub2-theme-arch-leap update-grub
 #------------------------------------------------------------------------------
 # Приоритет: [ОПЦИОНАЛЬНО]
 
-# 7.1 Резервное копирование конфига
-sudo cp /etc/nanorc /etc/nanorc.bak.$(date +%F)
-# 7.2 Базовые настройки интерфейса (раскомментируем)
-sudo sed -i 's/^# set autoindent/set autoindent/' /etc/nanorc
-sudo sed -i 's/^# set linenumbers/set linenumbers/' /etc/nanorc
-sudo sed -i 's/^# set softwrap/set softwrap/' /etc/nanorc
-sudo sed -i 's/^# set tabstospaces/set tabstospaces/' /etc/nanorc
-sudo sed -i 's/^# set tabsize [0-9]*/set tabsize 4/' /etc/nanorc
-sudo sed -i 's/^# set trimblanks/set trimblanks/' /etc/nanorc
-sudo sed -i 's/^# set unix/set unix/' /etc/nanorc
-sudo sed -i 's/^# set constantshow/set constantshow/' /etc/nanorc
-sudo sed -i 's/^# set indicator/set indicator/' /etc/nanorc
-sudo sed -i 's/^# set smarthome/set smarthome/' /etc/nanorc
-sudo sed -i 's/^# set quickblank/set quickblank/' /etc/nanorc
-# 7.3 Цветовая схема (для root/системных файлов)
-sudo sed -i 's/^# set titlecolor bold,white,magenta/set titlecolor bold,white,magenta/' /etc/nanorc
-sudo sed -i 's/^# set promptcolor black,yellow/set promptcolor black,yellow/' /etc/nanorc
-sudo sed -i 's/^# set statuscolor bold,white,magenta/set statuscolor bold,white,magenta/' /etc/nanorc
-sudo sed -i 's/^# set errorcolor bold,white,red/set errorcolor bold,white,red/' /etc/nanorc
-sudo sed -i 's/^# set spotlightcolor black,orange/set spotlightcolor black,orange/' /etc/nanorc
-sudo sed -i 's/^# set selectedcolor lightwhite,cyan/set selectedcolor lightwhite,cyan/' /etc/nanorc
-sudo sed -i 's/^# set numbercolor magenta/set numbercolor magenta/' /etc/nanorc
-# 7.4 Подключение подсветки синтаксиса
-sudo sed -i 's|^# include /usr/share/nano/.nanorc|include /usr/share/nano/.nanorc|' /etc/nanorc
-# 7.5 Проверка результата
-grep -E "^set |^include " /etc/nanorc
+# ==============================================================================
+# ШАГ 1: БЕЗОПАСНОСТЬ (Резервные копии)
+# ==============================================================================
+# 💾 Создание резервных копий
+sudo cp /etc/nanorc /etc/nanorc.backup_$(date +%F) 2>/dev/null || true
+cp ~/.nanorc ~/.nanorc.backup_$(date +%F) 2>/dev/null || true
+
+# ==============================================================================
+# ШАГ 2: СИСТЕМНЫЙ ФАЙЛ (/etc/nanorc)
+# ==============================================================================
+# ⚙️ Обновление системного файла /etc/nanorc..."
+sudo tee /etc/nanorc > /dev/null << 'SYSEOF'
+# Базовые настройки для всех пользователей системы (nano 9.0)
+# ВАЖНО: В nano 9.0 комментарии (#) пишутся ТОЛЬКО с начала новой строки!
+
+set mouse
+set linenumbers
+set tabsize 4
+set softwrap
+set regexp
+set historylog
+set backup
+set autoindent
+set smarthome
+
+# Подключаем стандартные синтаксисы, встроенные в CachyOS/Arch
+include /usr/share/nano/*.nanorc
+SYSEOF
+
+# ==============================================================================
+# ШАГ 3: ПОЛЬЗОВАТЕЛЬСКИЙ ФАЙЛ (~/.nanorc)
+# ==============================================================================
+# 🎨 Создание красочного пользовательского файла ~/.nanorc
+cat << 'USEREOF' > ~/.nanorc
+# ============================================================================
+# КОНФИГУРАЦИЯ GNU nano 9.0 (CachyOS)
+# Автор: rublev (Юрий)
+# ============================================================================
+#
+# ⚠️ ПРАВИЛА nano 9.0 (ЗАПОМНИТЕ ПЕРЕД РЕДАКТИРОВАНИЕМ):
+# 1. Комментарии (#) пишутся ТОЛЬКО с начала новой строки.
+#    НЕЛЬЗЯ: set mouse  # комментарий  <-- вызовет ошибку!
+# 2. УСТАРЕВШИЕ опции (удалены в nano 9.0): ruler, suspend, smooth, zap.
+# 3. Директива «color» ОБЯЗАТЕЛЬНО должна быть внутри «syntax» или «extendsyntax».
+# 4. matchbrackets требует аргумент: set matchbrackets "(<[{)>]}"
+# ============================================================================
+
+# --- РАЗДЕЛ 1: ЭРГОНОМИКА И ИНТЕРФЕЙС ---
+set mouse                 # Поддержка мыши (клик, выделение, прокрутка)
+set linenumbers           # Номера строк слева
+set tabsize 4             # Размер табуляции (современный стандарт)
+set softwrap              # Мягкий перенос длинных строк (не ломает файл)
+set regexp                # Расширенные регулярные выражения в поиске (Ctrl+W)
+set historylog            # Сохранять историю поиска между сессиями
+set backup                # Создавать резервные копии файлов с суффиксом ~
+set autoindent            # Сохранять отступ при переходе на новую строку
+set smarthome             # Клавиша Home ведёт к первому непробельному символу
+set multibuffer           # Разрешить открытие нескольких файлов (Ctrl+R -> Ctrl+T)
+set nonewlines            # Не добавлять пустую строку в конец файла при сохранении
+set nohelp                # Скрыть нижнюю панель подсказок (экономит 2 строки экрана)
+set matchbrackets "(<[{)>]}"  # Подсвечивать парные скобки
+
+# --- РАЗДЕЛ 2: КРАСОЧНАЯ ТЕМА (через extendsyntax) ---
+# Формат: extendsyntax <имя_языка> color <цвет_текста>,<цвет_фона> "<регулярное_выражение>"
+# Доступные цвета: red, green, blue, magenta, cyan, yellow, white, black
+# Доступные атрибуты: bold, italic, dim, underline, blink, reverse
+
+# PYTHON
+extendsyntax python color brightmagenta,black "(^|[[:space:]])#.*$"
+extendsyntax python color brightgreen,black "\"(\\.|[^\"])*\""
+extendsyntax python color brightgreen,black "'(\\.|[^'])*'"
+extendsyntax python color brightyellow,black "\b[0-9]+\b"
+extendsyntax python color bold,brightcyan,black "\b(def|class|import|from|as|try|except|finally|with|yield|return|if|elif|else|for|while|in|lambda|and|or|not|True|False|None)\b"
+
+# SHELL / BASH
+extendsyntax sh color brightmagenta,black "(^|[[:space:]])#.*$"
+extendsyntax sh color brightgreen,black "\"(\\.|[^\"])*\""
+extendsyntax sh color brightyellow,black "\b[0-9]+\b"
+extendsyntax sh color bold,brightcyan,black "\b(if|then|else|elif|fi|for|while|do|done|case|esac|function|return|local|echo|exit|export)\b"
+
+# C / C++
+extendsyntax c color brightmagenta,black "(^|[[:space:]])//.*$"
+extendsyntax c color brightmagenta,black "/\*.*\*/"
+extendsyntax c color brightgreen,black "\"(\\.|[^\"])*\""
+extendsyntax c color brightyellow,black "\b[0-9]+\b"
+extendsyntax c color bold,brightcyan,black "\b(if|else|for|while|do|return|int|char|float|double|void|struct|typedef|class|public|private|protected|namespace|include|define)\b"
+
+# HTML / XML
+extendsyntax html color brightblue,black "<[a-zA-Z0-9_\-]+[^>]*>"
+extendsyntax html color brightmagenta,black "</[a-zA-Z0-9_\-]+>"
+extendsyntax html color brightgreen,black "\"(\\.|[^\"])*\""
+
+# SQL
+extendsyntax sql color bold,brightmagenta,black "\b(SELECT|FROM|WHERE|INSERT|UPDATE|DELETE|JOIN|CREATE|TABLE|INTO|VALUES|SET|DROP|ALTER|INDEX|GROUP|BY|ORDER|HAVING|LIMIT)\b"
+extendsyntax sql color brightgreen,black "'(\\.|[^'])*'"
+extendsyntax sql color brightyellow,black "\b[0-9]+\b"
+
+# JSON
+extendsyntax json color brightblue,black "\"(\\.|[^\"])*\"\s*:"
+extendsyntax json color brightgreen,black ":\s*\"(\\.|[^\"])*\""
+extendsyntax json color brightyellow,black "\b[0-9]+\b"
+extendsyntax json color bold,brightcyan,black "\b(true|false|null)\b"
+
+# MARKDOWN
+extendsyntax markdown color bold,brightyellow,black "^#{1,6}\s+.*$"
+extendsyntax markdown color brightmagenta,black "\*\*[^*]+\*\*"
+extendsyntax markdown color brightgreen,black "\*[^*]+\*"
+extendsyntax markdown color brightblue,black "`[^`]+`"
+extendsyntax markdown color underline,brightcyan,black "\[[^]]+\]\([^)]+\)"
+
+# --- РАЗДЕЛ 3: УНИВЕРСАЛЬНАЯ ПОДСВЕТКА ДЛЯ СИСТЕМНЫХ ФАЙЛОВ ---
+# Решает проблему файлов без расширений (grub, fstab, hosts, environment и т.д.)
+syntax "system_configs" "^/etc/.*|/etc/hosts$|/etc/fstab$|/etc/environment$|/etc/locale.gen$|/etc/sudoers$|.*\.conf$|.*\.cfg$"
+
+color brightmagenta,black "(^|[[:space:]])#.*$"
+color brightgreen,black "\"(\\.|[^\"])*\""
+color brightgreen,black "'(\\.|[^'])*'"
+color brightyellow,black "\b[0-9]+\b"
+color bold,brightcyan,black "\b(true|false|yes|no|on|off|enable|disable|default|auto|manual|GRUB_[A-Z_]+)\b"
+color bold,brightblue,black "^[A-Za-z_][A-Za-z0-9_]*="
+USEREOF
+
+# ==============================================================================
+# ШАГ 4: СИНХРОНИЗАЦИЯ С ROOT (для работы sudo nano)
+# ==============================================================================
+# 🔑 Синхронизация настроек для sudo nano
+# Удаляем старую символическую ссылку, если она есть, чтобы избежать ошибок
+sudo rm -f /root/.nanorc
+# Создаем полноценную физическую копию (самый надежный способ)
+sudo cp ~/.nanorc /root/.nanorc
+
+# ✅ НАСТРОЙКА ЗАВЕРШЕНА УСПЕШНО!
+# 🚀 Проверьте результат: nano ~/.nanorc
+# 🚀 Проверьте sudo: sudo nano /etc/default/grub
 
 
 
@@ -378,18 +486,22 @@ grep -E "^set |^include " /etc/nanorc
 # Приоритет: [ОПЦИОНАЛЬНО]
 
 # 8.1 Установка Zsh
-sudo pacman -S --noconfirm zsh
+sudo pacman -Syy
+sudo pacman -S --noconfirm zsh fastfetch hyfetch
 # 8.2 Установка Oh My Zsh
-export CHSH=no
-export RUNZSH=no
-export KEEP_ZSHRC=yes
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 # 8.3 Установка плагинов
-git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
-git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions.git ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+### Настройка подсветки синтаксиса на Zsh
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
+mv zsh-syntax-highlighting ~/.oh-my-zsh/plugins
+echo "source ~/.oh-my-zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ~/.zshrc
+#   Настройка автозаполнения на Zsh
+git clone https://github.com/zsh-users/zsh-autosuggestions
+mv zsh-autosuggestions ~/.oh-my-zsh/custom/plugins
 # 8.4 Настройка темы и плагинов
 sed -i 's/^ZSH_THEME="robbyrussell"/ZSH_THEME="agnoster"/' ~/.zshrc
 sed -i 's/^plugins=(.)/plugins=(git archlinux extract zsh-syntax-highlighting zsh-autosuggestions)/' ~/.zshrc
+sed -i 's/^#* *plugins=.*/plugins=(git archlinux extract sudo themes zsh-navigation-tools zsh-autosuggestions)/' ~/.zshrc
 # 8.5 Дополнительные настройки
 echo 'ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=8"' >> ~/.zshrc
 echo 'ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20' >> ~/.zshrc
