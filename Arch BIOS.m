@@ -664,6 +664,8 @@ pacstrap /mnt nano reflector
 pacstrap /mnt pacman-contrib curl
 # 📦 btrfs-progs — утилиты для работы с BTRFS (~5 МБ)
 pacstrap /mnt btrfs-progs
+# 📦 busybox — набор UNIX-утилит командной строки
+pacstrap /mnt busybox
 # #------------------------------------------------------------------------------
 # ШАГ 4: ГЕНЕРАЦИЯ FSTAB
 # #------------------------------------------------------------------------------
