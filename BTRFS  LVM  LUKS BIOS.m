@@ -1040,7 +1040,7 @@ grub-install --target=i386-pc --recheck /dev/sdx
 # ШАГ 3: НАСТРОЙКА MKINITCPIO (HOOKS И MODULES)
 #------------------------------------------------------------------------------
 # HOOKS: systemd сам обработает шифрование, lvm2 активирует тома
-sed -i "s|^HOOKS=(.*)|HOOKS=(systemd autodetect modconf kms sd-vconsole block sd-encrypt lvm2 filesystems fsck)|" /etc/mkinitcpio.conf
+sed -i "s|^HOOKS=(.*)|HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt lvm2 filesystems fsck)|" /etc/mkinitcpio.conf
 # MODULES: модули для шифрования и LVM
 sed -i "s/MODULES=()/MODULES=(btrfs dm_mod dm_crypt)/" /etc/mkinitcpio.conf
 #------------------------------------------------------------------------------
