@@ -1028,7 +1028,7 @@ systemctl enable sshd.service
 # #------------------------------------------------------------------------------
 # 📋 Настройка HOOKS mkinitcpio
 # ✅ Полная замена строки HOOKS на безопасную последовательность.
-sed -i "s|^HOOKS=(.*)|HOOKS=(systemd autodetect modconf kms sd-vconsole block sd-encrypt lvm2 filesystems fsck)|" /etc/mkinitcpio.conf
+sed -i "s|^HOOKS=(.*)|HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt lvm2 filesystems fsck)|" /etc/mkinitcpio.conf
 # 📋 Настройка MODULES mkinitcpio
 # ✅ Универсальная команда: добавляет модули, сохраняя существующие (если есть).
 sed -i "s/MODULES=()/MODULES=(btrfs dm_mod dm_crypt)/" /etc/mkinitcpio.conf
