@@ -1232,125 +1232,118 @@ echo "#####################################################"
 
 
 #################################################################
-# 🎨 [CHROOT] БЛОК 14: УСТАНОВКА ВИДЕОДРАЙВЕРОВ И НАСТРОЙКА WAYLAND (MKINITCPIO)
+# 🎨 [CHROOT] БЛОК 14: УСТАНОВКА ВИДЕОДРАЙВЕРОВ И НАСТРОЙКА WAYLAND
 #################################################################
 # ℹ️ Зачем: Установка драйверов для Intel/AMD/NVIDIA, настройка
 # ядерных модулей для Wayland, гибернации и энергосбережения.
 # ⚠️ ВАЖНО: Если установка в VirtualBox — пропустите этот блок!
-# 💡 Для NVIDIA критически важна настройка модулей и KMS.
-# Без неё Wayland и гибернация могут не работать.
-# 📌 Данный блок дополняет настройки Блока 12.
+# 💡 Для NVIDIA критически важна настройка KMS и служб питания.
+# ❗ ВНИМАНИЕ: Настройки гибернации для ОДИНОЧНОЙ и ГИБРИДНОЙ
+#    графики кардинально отличаются! Читайте комментарии внимательно.
+# 📌 Данный блок дополняет настройки Блока 12 (хук kms).
 #################################################################
 # 🧹 Очистка экрана терминала
 clear
-
 #------------------------------------------------------------------------------
 # ШАГ 1: БАЗОВЫЕ УТИЛИТЫ И ПАКЕТЫ ДЛЯ ТЕСТИРОВАНИЯ (ОБЯЗАТЕЛЬНО ДЛЯ ВСЕХ)
 #------------------------------------------------------------------------------
-# 📦 mesa/lib32-mesa : Основа графического стека (OpenGL, Vulkan, OpenCL).
+# 📦 mesa/lib32-mesa : Основа графического стека (OpenGL, OpenCL).
 # 📦 vulkan-tools    : Утилита vulkaninfo для диагностики Vulkan.
 # 📦 libva-utils     : Утилита vainfo для проверки видео-ускорения (VA-API).
 # 📦 mesa-utils      : Утилита glxinfo для проверки OpenGL.
-# 📦 mesa-demos      : Демонстрационные программы OpenGL (glxgears).
 # 📦 glmark2         : Бенчмарк производительности графики.
-pacman -S --noconfirm mesa lib32-mesa vulkan-tools libva-utils mesa-utils mesa-demos glmark2
+pacman -S --noconfirm mesa lib32-mesa vulkan-tools libva-utils mesa-utils glmark2
 
 #------------------------------------------------------------------------------
 # ШАГ 2: ВЫБОР СЦЕНАРИЯ ВИДЕО (ВЫПОЛНИТЬ ТОЛЬКО НУЖНЫЙ)
 #------------------------------------------------------------------------------
 # ⚠️ ИНСТРУКЦИЯ:
-# • Для одной видеокарты: выполните ТОЛЬКО один сценарий (А, Б или В)
-# • Для гибридной (Intel/AMD iGPU + NVIDIA dGPU): выполните ШАГ 1 + Сценарий Б/А + Сценарий В
+# • Для одной видеокарты: выполните ТОЛЬКО один сценарий (А или Б)
+# • Для гибридной (Intel/AMD iGPU + NVIDIA dGPU): выполните ШАГ 1 + Сценарий А/Б + Сценарий В
 # • Удалите символ # только перед командами, которые нужно выполнить
-# • Заголовки >>> оставляйте как есть
 
 # >>> [СЦЕНАРИЙ А] INTEL (Встроенная графика) <<<
 # 📦 intel-media-driver : VA-API для аппаратного декодирования видео.
-# 📦 intel-vulkan-driver : Современный драйвер Vulkan для всех поколений Intel.
-# 📌 ПРИМЕЧАНИЕ: 32-битная версия доступна в официальном репозитории multilib.
-# pacman -S --noconfirm intel-media-driver
-# pacman -S --noconfirm intel-vulkan-driver
+# 📦 vulkan-intel       : Драйвер Vulkan для Intel (критично для игр/Steam).
+# 📦 lib32-*            : 32-битные версии для поддержки Steam/Proton.
+# pacman -S --noconfirm intel-media-driver vulkan-intel lib32-vulkan-intel
 
 # >>> [СЦЕНАРИЙ Б] AMD (Radeon / APU) <<<
-# 📦 libva-mesa-driver       : VA-API драйвер для AMD.
-# 📦 lib32-libva-mesa-driver : 32-битная версия (официальный multilib).
-# pacman -S --noconfirm libva-mesa-driver lib32-libva-mesa-driver
+# 📦 libva-mesa-driver  : VA-API драйвер для AMD.
+# 📦 vulkan-radeon      : Драйвер Vulkan для AMD (критично для игр/Steam).
+# 📦 lib32-*            : 32-битные версии для поддержки Steam/Proton.
+# pacman -S --noconfirm libva-mesa-driver lib32-libva-mesa-driver vulkan-radeon lib32-vulkan-radeon
 
 # >>> [СЦЕНАРИЙ В] NVIDIA (Дискретная или Гибридная) <<<
-# 📦 nvidia-open-dkms   : Драйвер с открытыми модулями ядра (RTX 20xx+).
+# 📦 nvidia-dkms        : Закрытый драйвер NVIDIA (стабильный, для всех карт).
 # 📦 nvidia-utils       : Утилиты и библиотеки (включая VA-API).
 # 📦 lib32-nvidia-utils : 32-битные библиотеки для игр (Steam/Proton).
 # 📦 nvidia-settings    : Панель управления настройками GPU.
-# ⚠️ ДЛЯ GPU СТАРШЕ RTX 20xx (GTX 16xx/10xx и ранее) замените `nvidia-open-dkms` на `nvidia-dkms`!
-# pacman -S --noconfirm nvidia-open-dkms nvidia-utils lib32-nvidia-utils nvidia-settings
+# ⚠️ ПРИМЕЧАНИЕ: Если у вас ТОЛЬКО RTX 20xx/30xx/40xx и вы хотите open-source ядро,
+#    замените `nvidia-dkms` на `nvidia-open-dkms`. Для GTX и старых карт — только `nvidia-dkms`.
+# pacman -S --noconfirm nvidia-dkms nvidia-utils lib32-nvidia-utils nvidia-settings
 
 # --- ДОПОЛНИТЕЛЬНО ДЛЯ ГИБРИДНЫХ НОУТБУКОВ (NVIDIA + Intel/AMD) ---
 # 💡 ВЫБЕРИТЕ ОДИН метод управления (рекомендуется Метод 1):
-# ✅ Метод 1: Switcheroo (интеграция в GUI GNOME/KDE/Wayland, современный, безопасный для гибернации)
+# ✅ Метод 1: Switcheroo (интеграция в GUI GNOME/KDE/Wayland, современный, безопасный)
 # pacman -S --noconfirm switcheroo-control
 # systemctl enable switcheroo-control.service
-
-# ⚙️ Метод 2: Prime (универсальный, команда "prime-run" в терминале, НЕ управляет питанием автоматически)
+# ⚙️ Метод 2: Prime (универсальный, запуск через команду "prime-run" в терминале)
 # pacman -S --noconfirm nvidia-prime
+# 💡 КАК ЗАПУСКАТЬ ИГРЫ НА dGPU В ГИБРИДНОМ РЕЖИМЕ:
+# Для Switcheroo: Нажмите ПКМ по ярлыку игры в Steam/KDE -> "Запустить с использованием дискретной видеокарты"
+# Для Prime: Запустите игру из терминала командой: prime-run %command% (в параметрах запуска Steam)
 
 #------------------------------------------------------------------------------
 # ШАГ 3: НАСТРОЙКА ЯДРА И МОДУЛЕЙ (ТОЛЬКО ДЛЯ NVIDIA)
 #------------------------------------------------------------------------------
-# ℹ️ Для Intel/AMD: Дополнительные настройки ядра НЕ ТРЕБУЮТСЯ. KMS активен по умолчанию.
+# ℹ️ Для Intel/AMD: Дополнительные настройки ядра НЕ ТРЕБУЮТСЯ. 
+#    Хук `kms` из Блока 12 автоматически загрузит нужные модули (amdgpu/i915).
 # ℹ️ Для NVIDIA: КРИТИЧЕСКИ ВАЖНО для работы Wayland и гибернации!
 # ⚠️ Если вы выбрали СЦЕНАРИЙ А или Б — ПРОПУСТИТЕ этот шаг!
 
-# 📋 1. Добавить модули NVIDIA в mkinitcpio.conf
-# ✅ Надёжная замена: корректно обрабатывает закомментированные и существующие строки.
-# sed -i -E "s/^#?MODULES=\((.*)\)/MODULES=(\1 nvidia nvidia_modeset nvidia_uvm nvidia_drm)/" /etc/mkinitcpio.conf
+# 📋 1. Добавить параметр ядра nvidia-drm.modeset=1 в GRUB
+# ✅ Включает DRM KMS, что обязательно для Wayland и корректного пробуждения.
+# ✅ Хук `kms` из Блока 12 сам подхватит модули, вручную в MODULES их вшивать НЕ НУЖНО!
+sed -i -E 's/^(GRUB_CMDLINE_LINUX_DEFAULT="[^"]*)"/\1 nvidia-drm.modeset=1"/' /etc/default/grub
 
-# 📋 2. Добавить параметр ядра nvidia-drm.modeset=1 в GRUB
-# ✅ Сохраняет существующие параметры из Блока 12 и добавляет новый.
-# sed -i -E "s/^(GRUB_CMDLINE_LINUX_DEFAULT="[^"]*)"/\1 nvidia-drm.modeset=1"/" /etc/default/grub
-
-# 📋 3. Конфигурация модулей (modprobe) — ТОЛЬКО ДЛЯ NVIDIA
-# ✅ Активация KMS для корректной работы Wayland и гибернации
+# 📋 2. Конфигурация модулей (modprobe) — ТОЛЬКО ДЛЯ ОДИНОЧНОЙ NVIDIA (ПК)
+# ⚠️ ВНИМАНИЕ: Если у вас ГИБРИДНЫЙ НОУТБУК, пропустите создание этого файла!
+#    На ноутбуках dGPU отключается (Runtime PM), и эти параметры вызовут конфликты.
 # echo "options nvidia-drm modeset=1" > /etc/modprobe.d/nvidia.conf
-# ✅ Включение динамического управления питанием (Runtime PM) для ноутбуков
-# echo "options nvidia NVreg_DynamicPowerManagement=0x02" >> /etc/modprobe.d/nvidia.conf
-# ✅ КЛЮЧЕВОЙ ПАРАМЕТР ДЛЯ ГИБЕРНАЦИИ: Сохраняет всё содержимое VRAM в системную RAM перед S3/S4
 # echo "options nvidia NVreg_PreserveVideoMemoryAllocations=1" >> /etc/modprobe.d/nvidia.conf
-# ✅ Временная директория для дампа VRAM (требует ≥2x VRAM свободного места в /var/tmp)
 # echo "options nvidia NVreg_TemporaryFilePath=/var/tmp" >> /etc/modprobe.d/nvidia.conf
 
-# ✅ Принудительная загрузка модуля nvidia-drm при старте системы
-# echo "nvidia-drm" > /etc/modules-load.d/nvidia-drm.conf
-
-# ✅ Включение системных служб управления сном/гибернацией
-# Службы NVIDIA обеспечивают сохранение/восстановление контекста GPU
-# systemctl enable nvidia-suspend.service
-# systemctl enable nvidia-hibernate.service
-# systemctl enable nvidia-resume.service
-# Switcheroo автоматически отключает питание dGPU перед гибернацией
-# systemctl enable switcheroo-control.service 2>/dev/null || true
+# 📋 3. Включение системных служб управления сном/гибернацией
+# ❗ КРИТИЧЕСКИЙ МОМЕНТ ДЛЯ ГИБЕРНАЦИИ:
+# ✅ ДЛЯ ПК С ОДНОЙ NVIDIA (или ноутбук, где dGPU НЕ отключается):
+#    Службы сохраняют VRAM в RAM перед сном. Без них будет черный экран при пробуждении.
+# systemctl enable nvidia-suspend.service nvidia-hibernate.service nvidia-resume.service
+#
+# ❌ ДЛЯ ГИБРИДНЫХ НОУТБУКОВ (Intel/AMD + NVIDIA с PRIME/Switcheroo):
+#    НЕ ВКЛЮЧАЙТЕ ЭТИ СЛУЖБЫ! Дискретная карта обесточена, попытка сохранить её состояние
+#    службами NVIDIA приведет к kernel panic и зависанию при выходе из сна/гибернации.
+#    Система будет корректно уходить в сон через службы iGPU (Intel/AMD).
 
 # 📋 4. Пересобрать initramfs
-# ✅ Перегенерирует образы с учётом новых модулей NVIDIA и хуков из Блока 12.
+# ✅ Перегенерирует образы с учётом новых параметров GRUB и хука kms.
 mkinitcpio -P
 
 # 📋 5. Обновить конфигурацию GRUB
-# ✅ Записывает в загрузчик итоговые параметры (из Блока 12 + добавленные здесь).
+# ✅ Записывает в загрузчик итоговые параметры.
 grub-mkconfig -o /boot/grub/grub.cfg
 
 clear
 echo " "
-
 #------------------------------------------------------------------------------
 # ✅ ПРОВЕРКА РЕЗУЛЬТАТОВ
 #------------------------------------------------------------------------------
-# 📋 Проверка MODULES в mkinitcpio.conf
-# grep "^MODULES=" /etc/mkinitcpio.conf
-
-# 📋 Проверка параметров ядра в grub.cfg
+# 📋 Проверка параметров ядра в grub.cfg (должен быть nvidia-drm.modeset=1)
 # grep "nvidia-drm.modeset" /boot/grub/grub.cfg | head -1
-
-# 📋 Проверка конфигурации modprobe
+# 📋 Проверка конфигурации modprobe (только если создавали файл для ПК)
 # cat /etc/modprobe.d/nvidia.conf
+# 📋 Проверка включенных служб NVIDIA (должны быть enabled только для ПК)
+# systemctl list-unit-files | grep nvidia-
 
 echo " "
 echo "#------------------------------------------------------------------------------"
@@ -1358,7 +1351,7 @@ echo "# 🧭 ЗАВЕРШЕНИЕ БЛОКА 14   "
 echo "#------------------------------------------------------------------------------"
 echo "# ✅ ВСЕ ДЕЙСТВИЯ ВЫПОЛНЕНЫ.   "
 echo "# ⚠️ НЕ ВЫХОДИТЕ из chroot!   "
-echo "# 📌 Убедитесь, что все команды из выбранных шагов выполнены.   "
+echo "# 📌 Убедитесь, что вы выбрали ПРАВИЛЬНЫЙ сценарий и службы гибернации.   "
 echo "# ➡️ ПРОДОЛЖИТЕ УСТАНОВКУ:   "
 echo "    "
 #################################################################
