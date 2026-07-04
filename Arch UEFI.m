@@ -1324,19 +1324,16 @@ pacman -S --noconfirm mesa lib32-mesa vulkan-tools libva-utils mesa-utils glmark
 # 📋 3. Создание скрипта для выгрузки модулей NVIDIA перед гибернацией.
 # ✅ Гарантирует, что дискретная карта не помешает сохранению образа гибернации.
 # ❗ БЕЗ ЭТОГО СКРИПТА ГИБЕРНАЦИЯ НА ГИБРИДНЫХ НОУТБУКАХ НЕ РАБОТАЕТ!
-tee /usr/lib/systemd/system-sleep/nvidia.sh << 'EOF'
-#!/bin/sh
-case $1 in
-    pre)
-        rmmod nvidia_drm nvidia_uvm nvidia_modeset nvidia 2>/dev/null
-        sleep 1
-        ;;
-    post)
-        # При пробуждении ничего не делаем, модуль загрузится при необходимости
-        ;;
-esac
-EOF
-chmod +x /usr/lib/systemd/system-sleep/nvidia.sh
+# echo '#!/bin/sh' > /usr/lib/systemd/system-sleep/nvidia.sh
+# echo "case \$1 in" >> /usr/lib/systemd/system-sleep/nvidia.sh
+# echo "    pre)" >> /usr/lib/systemd/system-sleep/nvidia.sh
+# echo "        rmmod nvidia_drm nvidia_uvm nvidia_modeset nvidia 2>/dev/null" >> /usr/lib/systemd/system-sleep/nvidia.sh
+# echo "        sleep 1" >> /usr/lib/systemd/system-sleep/nvidia.sh
+# echo "        ;;" >> /usr/lib/systemd/system-sleep/nvidia.sh
+# echo "    post)" >> /usr/lib/systemd/system-sleep/nvidia.sh
+# echo "        ;;" >> /usr/lib/systemd/system-sleep/nvidia.sh
+# echo "esac" >> /usr/lib/systemd/system-sleep/nvidia.sh
+# chmod +x /usr/lib/systemd/system-sleep/nvidia.sh
 
 # ⛔ КАТЕГОРИЧЕСКИ НЕЛЬЗЯ ДЛЯ ГИБРИДНОГО НОУТБУКА:
 # • Включать службы: nvidia-suspend.service, nvidia-hibernate.service, nvidia-resume.service
@@ -1346,7 +1343,7 @@ chmod +x /usr/lib/systemd/system-sleep/nvidia.sh
 
 # 📋 4. Добавление модуля nvme в initramfs (КРИТИЧНО ДЛЯ ГИБЕРНАЦИИ НА NVME)
 # ✅ Добавляет nvme к уже существующим модулям (btrfs из Блока 12).
-sed -i "s/^MODULES=(\(.*\))/MODULES=(\1 nvme)/" /etc/mkinitcpio.conf
+# sed -i "s/^MODULES=(\(.*\))/MODULES=(\1 nvme)/" /etc/mkinitcpio.conf
 
 # 📋 5. Пересборка initramfs и обновление GRUB
 mkinitcpio -P
