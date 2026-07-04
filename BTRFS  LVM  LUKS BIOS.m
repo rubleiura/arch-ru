@@ -1280,16 +1280,17 @@ echo "#####################################################"
 #################################################################
 # 🎨 [CHROOT] БЛОК 14: УСТАНОВКА ВИДЕОДРАЙВЕРОВ И НАСТРОЙКА WAYLAND
 #################################################################
-# ℹ️ Зачем: Установка драйверов для Intel/AMD/NVIDIA, настройка
+# ℹ️ Зачем: Установка драйверов Intel/AMD/NVIDIA, настройка
 # ядерных модулей для Wayland, гибернации и энергосбережения.
 # ⚠️ ВАЖНО: Если установка в VirtualBox — пропустите этот блок!
 # 💡 Для NVIDIA критически важна настройка KMS и служб питания.
-# ❗ ВНИМАНИЕ: Настройки гибернации для ОДИНОЧНОЙ и ГИБРИДНОЙ
-#    графики кардинально отличаются! Читайте комментарии внимательно.
+# ❗ ВНИМАНИЕ: Настройки для ОДИНОЧНОЙ NVIDIA и ГИБРИДНОЙ графики
+#    кардинально отличаются! Читайте комментарии внимательно.
 # 📌 Данный блок дополняет настройки Блока 12 (хук kms).
 #################################################################
 # 🧹 Очистка экрана терминала
 clear
+
 #------------------------------------------------------------------------------
 # ШАГ 1: БАЗОВЫЕ УТИЛИТЫ И ПАКЕТЫ ДЛЯ ТЕСТИРОВАНИЯ (ОБЯЗАТЕЛЬНО ДЛЯ ВСЕХ)
 #------------------------------------------------------------------------------
@@ -1304,9 +1305,10 @@ pacman -S --noconfirm mesa lib32-mesa vulkan-tools libva-utils mesa-utils glmark
 # ШАГ 2: ВЫБОР СЦЕНАРИЯ ВИДЕО (ВЫПОЛНИТЬ ТОЛЬКО НУЖНЫЙ)
 #------------------------------------------------------------------------------
 # ⚠️ ИНСТРУКЦИЯ:
-# • Для одной видеокарты: выполните ТОЛЬКО один сценарий (А или Б)
-# • Для гибридной (Intel/AMD iGPU + NVIDIA dGPU): выполните ШАГ 1 + Сценарий А/Б + Сценарий В
+# • Для одной видеокарты: выполните ТОЛЬКО один сценарий (А, Б или В)
+# • Для гибридной (Intel/AMD iGPU + NVIDIA dGPU): выполните ШАГ 1 + Сценарий А/Б + Сценарий Г
 # • Удалите символ # только перед командами, которые нужно выполнить
+# • Удалите не нужные сценарии, что-бы не было путаницы и ошибок
 
 # >>> [СЦЕНАРИЙ А] INTEL (Встроенная графика) <<<
 # 📦 intel-media-driver : VA-API для аппаратного декодирования видео.
@@ -1320,78 +1322,113 @@ pacman -S --noconfirm mesa lib32-mesa vulkan-tools libva-utils mesa-utils glmark
 # 📦 lib32-*            : 32-битные версии для поддержки Steam/Proton.
 # pacman -S --noconfirm libva-mesa-driver lib32-libva-mesa-driver vulkan-radeon lib32-vulkan-radeon
 
-# >>> [СЦЕНАРИЙ В] NVIDIA (Дискретная или Гибридная) <<<
+# >>> [СЦЕНАРИЙ В] NVIDIA (ОДИНОЧНАЯ, ДЕСКТОП / ПК) <<<
+# ⚠️ Выполнять ТОЛЬКО если в системе одна видеокарта NVIDIA (без iGPU)!
 # 📦 nvidia-dkms        : Закрытый драйвер NVIDIA (стабильный, для всех карт).
 # 📦 nvidia-utils       : Утилиты и библиотеки (включая VA-API).
 # 📦 lib32-nvidia-utils : 32-битные библиотеки для игр (Steam/Proton).
 # 📦 nvidia-settings    : Панель управления настройками GPU.
-# ⚠️ ПРИМЕЧАНИЕ: Если у вас ТОЛЬКО RTX 20xx/30xx/40xx и вы хотите open-source ядро,
-#    замените `nvidia-dkms` на `nvidia-open-dkms`. Для GTX и старых карт — только `nvidia-dkms`.
 # pacman -S --noconfirm nvidia-dkms nvidia-utils lib32-nvidia-utils nvidia-settings
 
-# --- ДОПОЛНИТЕЛЬНО ДЛЯ ГИБРИДНЫХ НОУТБУКОВ (NVIDIA + Intel/AMD) ---
-# 💡 ВЫБЕРИТЕ ОДИН метод управления (рекомендуется Метод 1):
-# ✅ Метод 1: Switcheroo (интеграция в GUI GNOME/KDE/Wayland, современный, безопасный)
-# pacman -S --noconfirm switcheroo-control
-# systemctl enable switcheroo-control.service
-# ⚙️ Метод 2: Prime (универсальный, запуск через команду "prime-run" в терминале)
-# pacman -S --noconfirm nvidia-prime
-# 💡 КАК ЗАПУСКАТЬ ИГРЫ НА dGPU В ГИБРИДНОМ РЕЖИМЕ:
-# Для Switcheroo: Нажмите ПКМ по ярлыку игры в Steam/KDE -> "Запустить с использованием дискретной видеокарты"
-# Для Prime: Запустите игру из терминала командой: prime-run %command% (в параметрах запуска Steam)
-
-#------------------------------------------------------------------------------
-# ШАГ 3: НАСТРОЙКА ЯДРА И МОДУЛЕЙ (ТОЛЬКО ДЛЯ NVIDIA)
-#------------------------------------------------------------------------------
-# ℹ️ Для Intel/AMD: Дополнительные настройки ядра НЕ ТРЕБУЮТСЯ. 
-#    Хук `kms` из Блока 12 автоматически загрузит нужные модули (amdgpu/i915).
-# ℹ️ Для NVIDIA: КРИТИЧЕСКИ ВАЖНО для работы Wayland и гибернации!
-# ⚠️ Если вы выбрали СЦЕНАРИЙ А или Б — ПРОПУСТИТЕ этот шаг!
-
+# --- Настройки ядра и модулей (ТОЛЬКО ДЛЯ ОДИНОЧНОЙ NVIDIA) ---
 # 📋 1. Добавить параметр ядра nvidia-drm.modeset=1 в GRUB
 # ✅ Включает DRM KMS, что обязательно для Wayland и корректного пробуждения.
-# ✅ Хук `kms` из Блока 12 сам подхватит модули, вручную в MODULES их вшивать НЕ НУЖНО!
-sed -i -E 's/^(GRUB_CMDLINE_LINUX_DEFAULT="[^"]*)"/\1 nvidia-drm.modeset=1"/' /etc/default/grub
+# sed -i -E 's/^(GRUB_CMDLINE_LINUX_DEFAULT="[^"]*)"/\1 nvidia-drm.modeset=1"/' /etc/default/grub
 
 # 📋 2. Конфигурация модулей (modprobe) — ТОЛЬКО ДЛЯ ОДИНОЧНОЙ NVIDIA (ПК)
-# ⚠️ ВНИМАНИЕ: Если у вас ГИБРИДНЫЙ НОУТБУК, пропустите создание этого файла!
-#    На ноутбуках dGPU отключается (Runtime PM), и эти параметры вызовут конфликты.
+# ✅ Создаёт файл с параметрами для сохранения VRAM при сне/гибернации.
 # echo "options nvidia-drm modeset=1" > /etc/modprobe.d/nvidia.conf
 # echo "options nvidia NVreg_PreserveVideoMemoryAllocations=1" >> /etc/modprobe.d/nvidia.conf
 # echo "options nvidia NVreg_TemporaryFilePath=/var/tmp" >> /etc/modprobe.d/nvidia.conf
 
 # 📋 3. Включение системных служб управления сном/гибернацией
-# ❗ КРИТИЧЕСКИЙ МОМЕНТ ДЛЯ ГИБЕРНАЦИИ:
-# ✅ ДЛЯ ПК С ОДНОЙ NVIDIA (или ноутбук, где dGPU НЕ отключается):
-#    Службы сохраняют VRAM в RAM перед сном. Без них будет черный экран при пробуждении.
+# ✅ КРИТИЧЕСКИ ВАЖНО ДЛЯ ПК С ОДНОЙ NVIDIA:
+#    Службы сохраняют VRAM в RAM перед сном. Без них будет чёрный экран при пробуждении.
 # systemctl enable nvidia-suspend.service nvidia-hibernate.service nvidia-resume.service
-#
-# ❌ ДЛЯ ГИБРИДНЫХ НОУТБУКОВ (Intel/AMD + NVIDIA с PRIME/Switcheroo):
-#    НЕ ВКЛЮЧАЙТЕ ЭТИ СЛУЖБЫ! Дискретная карта обесточена, попытка сохранить её состояние
-#    службами NVIDIA приведет к kernel panic и зависанию при выходе из сна/гибернации.
-#    Система будет корректно уходить в сон через службы iGPU (Intel/AMD).
 
-# 📋 4. Пересобрать initramfs
-# ✅ Перегенерирует образы с учётом новых параметров GRUB и хука kms.
+# 📋 4. Пересобрать initramfs и обновить GRUB
+# mkinitcpio -P
+# grub-mkconfig -o /boot/grub/grub.cfg
+
+# >>> [СЦЕНАРИЙ Г] ГИБРИДНАЯ ГРАФИКА (Intel/AMD iGPU + NVIDIA dGPU) <<<
+# 📦 1. Установка драйверов NVIDIA и инструментов управления.
+# Для управления питанием dGPU выберите ОДИН метод:
+#   - Метод 1: switcheroo-control (интеграция в GUI, современный, рекомендуется)
+#   - Метод 2: nvidia-prime (запуск через prime-run в терминале)
+# Раскомментируйте нужные строки:
+# pacman -S --noconfirm nvidia-dkms nvidia-utils lib32-nvidia-utils nvidia-settings
+# pacman -S --noconfirm switcheroo-control   # Метод 1
+# pacman -S --noconfirm nvidia-prime         # Метод 2
+
+# 📋 2. Настройка параметров ядра (GRUB) – ОБЯЗАТЕЛЬНО ДЛЯ ГИБРИДА!
+# Добавляем:
+#   - nvidia-drm.modeset=1 (для Wayland и корректного пробуждения)
+#   - nvidia.NVreg_PreserveVideoMemoryAllocations=0 (освобождает видеопамять)
+#   - resume_offset=0 (помогает ядру найти образ гибернации)
+# sed -i -E 's/^(GRUB_CMDLINE_LINUX_DEFAULT="[^"]*)"/\1 nvidia-drm.modeset=1 nvidia.NVreg_PreserveVideoMemoryAllocations=0 resume_offset=0"/' /etc/default/grub
+
+# 📋 3. Создание скрипта для выгрузки модулей NVIDIA перед гибернацией.
+# ✅ Гарантирует, что дискретная карта не помешает сохранению образа гибернации.
+# ❗ БЕЗ ЭТОГО СКРИПТА ГИБЕРНАЦИЯ НА ГИБРИДНЫХ НОУТБУКАХ НЕ РАБОТАЕТ!
+tee /usr/lib/systemd/system-sleep/nvidia.sh << 'EOF'
+#!/bin/sh
+case $1 in
+    pre)
+        rmmod nvidia_drm nvidia_uvm nvidia_modeset nvidia 2>/dev/null
+        sleep 1
+        ;;
+    post)
+        # При пробуждении ничего не делаем, модуль загрузится при необходимости
+        ;;
+esac
+EOF
+chmod +x /usr/lib/systemd/system-sleep/nvidia.sh
+
+# ⛔ КАТЕГОРИЧЕСКИ НЕЛЬЗЯ ДЛЯ ГИБРИДНОГО НОУТБУКА:
+# • Включать службы: nvidia-suspend.service, nvidia-hibernate.service, nvidia-resume.service
+#   (systemctl enable nvidia-suspend.service и т.п.) – приведёт к kernel panic!
+# • Создавать /etc/modprobe.d/nvidia.conf с опцией NVreg_PreserveVideoMemoryAllocations=1
+#   (она предназначена только для ПК с одной NVIDIA, на ноутбуке вызовет конфликты с Runtime PM).
+
+# 📋 4. Добавление модуля nvme в initramfs (КРИТИЧНО ДЛЯ ГИБЕРНАЦИИ НА NVME)
+# ✅ Добавляет nvme к уже существующим модулям (btrfs из Блока 12).
+sed -i "s/^MODULES=(\(.*\))/MODULES=(\1 nvme)/" /etc/mkinitcpio.conf
+
+# 📋 5. Пересборка initramfs и обновление GRUB
 mkinitcpio -P
-
-# 📋 5. Обновить конфигурацию GRUB
-# ✅ Записывает в загрузчик итоговые параметры.
 grub-mkconfig -o /boot/grub/grub.cfg
 
+# 📋 6. (Опционально) Включение switcheroo, если выбрали метод 1
+# systemctl enable switcheroo-control.service
 clear
-echo " "
 #------------------------------------------------------------------------------
 # ✅ ПРОВЕРКА РЕЗУЛЬТАТОВ
 #------------------------------------------------------------------------------
-# 📋 Проверка параметров ядра в grub.cfg (должен быть nvidia-drm.modeset=1)
-# grep "nvidia-drm.modeset" /boot/grub/grub.cfg | head -1
-# 📋 Проверка конфигурации modprobe (только если создавали файл для ПК)
-# cat /etc/modprobe.d/nvidia.conf
-# 📋 Проверка включенных служб NVIDIA (должны быть enabled только для ПК)
-# systemctl list-unit-files | grep nvidia-
-
 echo " "
+echo "#------------------------------------------------------------------------------"
+echo "# 🔍 ПРОВЕРКА НАСТРОЕК ГРАФИКИ"
+echo "#------------------------------------------------------------------------------"
+echo "Параметры ядра GRUB:"
+grep "GRUB_CMDLINE_LINUX_DEFAULT" /etc/default/grub
+echo ""
+# Если сценарий В (одиночная NVIDIA) – покажет файл modprobe:
+if [ -f /etc/modprobe.d/nvidia.conf ]; then
+  echo "Содержимое /etc/modprobe.d/nvidia.conf:"
+  cat /etc/modprobe.d/nvidia.conf
+fi
+echo ""
+# Если сценарий Г (гибрид) – покажет скрипт system-sleep:
+if [ -f /usr/lib/systemd/system-sleep/nvidia.sh ]; then
+  echo "Скрипт выгрузки NVIDIA перед сном:"
+  ls -l /usr/lib/systemd/system-sleep/nvidia.sh
+fi
+echo ""
+echo "Хуки mkinitcpio:"
+grep "^HOOKS=" /etc/mkinitcpio.conf
+echo ""
+echo "Модули mkinitcpio:"
+grep "^MODULES=" /etc/mkinitcpio.conf
+echo ""
 echo "#------------------------------------------------------------------------------"
 echo "# 🧭 ЗАВЕРШЕНИЕ БЛОКА 14   "
 echo "#------------------------------------------------------------------------------"
