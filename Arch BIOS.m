@@ -1495,7 +1495,7 @@ echo " "
 # 🧹 Очистка экрана терминала
 clear
 # 📦 Установка KDE Plasma и базовых приложений
-pacman -S --noconfirm plasma-desktop breeze breeze-cursors breeze-gtk breeze-plymouth kdecoration libplasma qqc2-breeze-style kdeplasma-addons kwayland kwin kwin-x11 layer-shell-qt plasma-integration plasma-workspace plasma-workspace-wallpapers kde-gtk-config plymouth-kcm sddm-kcm systemsettings bluedevil kpipewire kscreen libkscreen plasma-nm plasma-pa powerdevil ksystemstats kwallet-pam kwrited plasma-login-manager polkit-kde-agent plasma-browser-integration
+pacman -S --noconfirm plasma-desktop breeze breeze-cursors breeze-gtk breeze-plymouth kdecoration kinfocenter libplasma qqc2-breeze-style kdeplasma-addons kwayland kwin kwin-x11 layer-shell-qt plasma-integration plasma-workspace plasma-workspace-wallpapers kde-gtk-config plymouth-kcm sddm-kcm systemsettings bluedevil kpipewire kscreen libkscreen plasma-nm plasma-pa powerdevil ksystemstats kwallet-pam kwrited plasma-login-manager polkit-kde-agent plasma-browser-integration
 pacman -S --noconfirm kde-system dolphin-plugins kate konsole gwenview elisa okular ark
 # 📦 Кодеки, интеграция, порталы Wayland/XDG и поддержка Wayland для Qt
 pacman -S --noconfirm ffmpegthumbs poppler-glib qt6-wayland
