@@ -1330,11 +1330,11 @@ pacman -S --noconfirm mesa lib32-mesa vulkan-tools libva-utils mesa-utils glmark
 
 # >>> [СЦЕНАРИЙ В] NVIDIA (ОДИНОЧНАЯ, ДЕСКТОП / ПК) <<<
 # ⚠️ Выполнять ТОЛЬКО если в системе одна видеокарта NVIDIA (без iGPU)!
-# 📦 nvidia-dkms        : Закрытый драйвер NVIDIA (стабильный, для всех карт).
+# 📦 nvidia-open-dkms        : Драйвер с открытыми модулями ядра (для всех карт).
 # 📦 nvidia-utils       : Утилиты и библиотеки (включая VA-API).
 # 📦 lib32-nvidia-utils : 32-битные библиотеки для игр (Steam/Proton).
 # 📦 nvidia-settings    : Панель управления настройками GPU.
-# pacman -S --noconfirm nvidia-dkms nvidia-utils lib32-nvidia-utils nvidia-settings
+# pacman -S --noconfirm nvidia-open-dkms nvidia-utils lib32-nvidia-utils nvidia-settings
 
 # --- Настройки ядра и модулей (ТОЛЬКО ДЛЯ ОДИНОЧНОЙ NVIDIA) ---
 # 📋 1. Добавить параметр ядра nvidia-drm.modeset=1 в GRUB
@@ -1362,7 +1362,7 @@ pacman -S --noconfirm mesa lib32-mesa vulkan-tools libva-utils mesa-utils glmark
 #   - Метод 1: switcheroo-control (интеграция в GUI, современный, рекомендуется)
 #   - Метод 2: nvidia-prime (запуск через prime-run в терминале)
 # Раскомментируйте нужные строки:
-# pacman -S --noconfirm nvidia-dkms nvidia-utils lib32-nvidia-utils nvidia-settings
+# pacman -S --noconfirm nvidia-open-dkms nvidia-utils lib32-nvidia-utils nvidia-settings
 # pacman -S --noconfirm switcheroo-control   # Метод 1
 # pacman -S --noconfirm nvidia-prime         # Метод 2
 
