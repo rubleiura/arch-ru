@@ -1078,8 +1078,19 @@ echo " "
 #################################################################
 # 🧹 Очистка экрана терминала
 clear
+#------------------------------------------------------------------------------
+# ШАГ 1: БАЗОВЫЕ УТИЛИТЫ ГРАФИКИ И ПАКЕТЫ ДЛЯ ТЕСТИРОВАНИЯ
+#------------------------------------------------------------------------------
+# ⚠️ ВАЖНО: Данный шаг обязателен для выполнения
+# ℹ️ Зачем: Установка только базовых видеодрайверов для запуска графической оболочки
+# 📦 mesa/lib32-mesa : Основа графического стека (OpenGL, OpenCL).
+# 📦 vulkan-tools    : Утилита vulkaninfo для диагностики Vulkan.
+# 📦 libva-utils     : Утилита vainfo для проверки видео-ускорения (VA-API).
+# 📦 mesa-utils      : Утилита glxinfo для проверки OpenGL.
+# 📦 glmark2         : Бенчмарк производительности графики.
+pacman -S --noconfirm mesa lib32-mesa vulkan-tools libva-utils mesa-utils glmark2
 # #------------------------------------------------------------------------------
-# ШАГ 1: БАЗОВЫЕ УТИЛИТЫ И АРХИВАТОРЫ
+# ШАГ 2: БАЗОВЫЕ УТИЛИТЫ И АРХИВАТОРЫ
 # #------------------------------------------------------------------------------
 # 📦 haveged — генератор энтропии для ускорения шифрования.
 # 📦 wget — загрузка файлов через HTTP/HTTPS.
@@ -1094,7 +1105,7 @@ clear
 # 📦 bash-completion — автодополнение команд в bash.
 pacman -S --noconfirm haveged wget usbutils lsof dmidecode dialog zip unzip unrar p7zip lzop lrzip sudo mlocate less bash-completion
 # #------------------------------------------------------------------------------
-# ШАГ 2: УТИЛИТЫ АДМИНИСТРИРОВАНИЯ И МОНИТОРИНГА
+# ШАГ 3: УТИЛИТЫ АДМИНИСТРИРОВАНИЯ И МОНИТОРИНГА
 # #------------------------------------------------------------------------------
 # 📦 neovim — продвинутый текстовый редактор.
 # 📦 ripgrep — быстрый поиск по тексту.
@@ -1108,7 +1119,7 @@ pacman -S --noconfirm haveged wget usbutils lsof dmidecode dialog zip unzip unra
 # 📦 fwupd — обновление прошивок оборудования.
 pacman -S --noconfirm neovim ripgrep bat zstd lz4 smartmontools lm_sensors rsync git fwupd
 # #------------------------------------------------------------------------------
-# ШАГ 3: ПОДДЕРЖКА ФАЙЛОВЫХ СИСТЕМ И СЕТЕЙ
+# ШАГ 4: ПОДДЕРЖКА ФАЙЛОВЫХ СИСТЕМ И СЕТЕЙ
 # #------------------------------------------------------------------------------
 # 📦 dosfstools — утилиты для FAT32.
 # 📦 ntfs-3g — поддержка NTFS.
@@ -1118,7 +1129,7 @@ pacman -S --noconfirm neovim ripgrep bat zstd lz4 smartmontools lm_sensors rsync
 # 📦 nfs-utils/cifs-utils — сетевые ФС.
 pacman -S --noconfirm dosfstools ntfs-3g exfatprogs gptfdisk fuse2 fuse3 fuseiso nfs-utils cifs-utils
 # #------------------------------------------------------------------------------
-# ШАГ 4: СИСТЕМНЫЕ СЕРВИСЫ
+# ШАГ 5: СИСТЕМНЫЕ СЕРВИСЫ
 # #------------------------------------------------------------------------------
 # 📦 dbus-broker — шина D-BUS.
 pacman -S --noconfirm dbus-broker
@@ -1132,7 +1143,7 @@ systemctl enable haveged.service
 # 10 = минимальное использование swap (рекомендуется для SSD).
 echo "vm.swappiness=10" > /etc/sysctl.d/99-swappiness.conf
 # #------------------------------------------------------------------------------
-# ШАГ 5: BLUETOOTH, ПРИНТЕРЫ И СКАНЕРЫ
+# ШАГ 6: BLUETOOTH, ПРИНТЕРЫ И СКАНЕРЫ
 # #------------------------------------------------------------------------------
 # 📦 bluez/bluez-utils — Bluetooth стек.
 pacman -S --noconfirm bluez bluez-utils
@@ -1146,7 +1157,7 @@ sed -i "s/#AutoEnable=true/AutoEnable=true/g" /etc/bluetooth/main.conf
 pacman -S --noconfirm cups cups-pdf ghostscript gsfonts avahi system-config-printer
 systemctl enable cups.service avahi-daemon.service
 # #------------------------------------------------------------------------------
-# ШАГ 6: XDG, МОНТИРОВАНИЕ И АУДИО
+# ШАГ 7: XDG, МОНТИРОВАНИЕ И АУДИО
 # #------------------------------------------------------------------------------
 # 📦 xdg-utils/xdg-user-dirs — стандарты freedesktop.org.
 pacman -S --noconfirm xdg-utils xdg-user-dirs
@@ -1161,21 +1172,21 @@ pacman -S --noconfirm pipewire-alsa pipewire-pulse pipewire-jack pipewire-v4l2 p
 pacman -S --noconfirm wireplumber
 systemctl --global enable pipewire pipewire-pulse wireplumber
 # #------------------------------------------------------------------------------
-# ШАГ 7: МУЛЬТИМЕДИА И КОДЕКИ
+# ШАГ 8: МУЛЬТИМЕДИА И КОДЕКИ
 # #------------------------------------------------------------------------------
 # 📦 gstreamer + кодеки — воспроизведение медиа.
 # 📦 ffmpeg — конвертация видео/аудио.
 # 📦 libdvdcss — воспроизведение DVD.
 pacman -S --noconfirm gstreamer gst-plugins-{base,good,bad,ugly} gst-libav ffmpeg a52dec faac faad2 flac lame libdca libdv libmad libmpeg2 libtheora libvorbis wavpack x264 x265 xvidcore libdvdcss taglib
 # #------------------------------------------------------------------------------
-# ШАГ 8: ДОКУМЕНТАЦИЯ И СЕТЕВЫЕ УТИЛИТЫ
+# ШАГ 9: ДОКУМЕНТАЦИЯ И СЕТЕВЫЕ УТИЛИТЫ
 # #------------------------------------------------------------------------------
 # 📦 man-db/man-pages/man-pages-ru — документация.
 pacman -S --noconfirm man-db man-pages man-pages-ru
 # 📦 iproute2/inetutils/dnsutils — сетевые утилиты.
 pacman -S --noconfirm iproute2 inetutils dnsutils
 # #------------------------------------------------------------------------------
-# ШАГ 9: ШРИФТЫ
+# ШАГ 10: ШРИФТЫ
 # #------------------------------------------------------------------------------
 # 📦 noto-fonts/emoji — шрифты Noto.
 # 📦 ttf-dejavu/liberation/terminus — основные шрифты.
@@ -1185,7 +1196,7 @@ pacman -S --noconfirm noto-fonts noto-fonts-emoji ttf-dejavu ttf-liberation term
 # 📋 Обновление кэша шрифтов.
 fc-cache -fv
 # #------------------------------------------------------------------------------
-# ШАГ 10: ПРОВЕРКА РЕЗУЛЬТАТОВ
+# ШАГ 11: ПРОВЕРКА РЕЗУЛЬТАТОВ
 # #------------------------------------------------------------------------------
 # 🧹 Очистка экрана терминала
 clear
@@ -1232,177 +1243,7 @@ echo "#####################################################"
 
 
 #################################################################
-# 🎨 [CHROOT] БЛОК 14: УСТАНОВКА ВИДЕОДРАЙВЕРОВ И НАСТРОЙКА WAYLAND
-#################################################################
-# ℹ️ Зачем: Установка драйверов Intel/AMD/NVIDIA, настройка
-# ядерных модулей для Wayland, гибернации и энергосбережения.
-# ⚠️ ВАЖНО: Если установка в VirtualBox — пропустите этот блок!
-# 💡 Для NVIDIA критически важна настройка KMS и служб питания.
-# ❗ ВНИМАНИЕ: Настройки для ОДИНОЧНОЙ NVIDIA и ГИБРИДНОЙ графики
-#    кардинально отличаются! Читайте комментарии внимательно.
-# ⚠️ ПРИМЕЧАНИЕ: Для автоматической установки драйверов этот блок не редактируется.
-#   Устанавливаются только базовые видеодрайвера для запуска графической оболочки.
-#   После установки и перезагрузки системы воспользуйтесь дополнительным чек листом
-#   "Настройка после установки Arch Linux.m" и выполните установку и настройку
-#   видеодрайверов с помощью chwd, утилитой для автоматической установки видеодрайверов.
-#################################################################
-# 🧹 Очистка экрана терминала
-clear
-
-#------------------------------------------------------------------------------
-# ШАГ 1: БАЗОВЫЕ УТИЛИТЫ И ПАКЕТЫ ДЛЯ ТЕСТИРОВАНИЯ (ОБЯЗАТЕЛЬНО ДЛЯ ВСЕХ)
-#------------------------------------------------------------------------------
-# ⚠️ ВАЖНО: Данный шаг обязателен для выполнения
-# ℹ️ Зачем: Установка только базовых видеодрайверов для запуска графической оболочки
-# 📦 mesa/lib32-mesa : Основа графического стека (OpenGL, OpenCL).
-# 📦 vulkan-tools    : Утилита vulkaninfo для диагностики Vulkan.
-# 📦 libva-utils     : Утилита vainfo для проверки видео-ускорения (VA-API).
-# 📦 mesa-utils      : Утилита glxinfo для проверки OpenGL.
-# 📦 glmark2         : Бенчмарк производительности графики.
-pacman -S --noconfirm mesa lib32-mesa vulkan-tools libva-utils mesa-utils glmark2
-
-#------------------------------------------------------------------------------
-# ШАГ 2: ВЫБОР СЦЕНАРИЯ ВИДЕО (ВЫПОЛНИТЬ ТОЛЬКО НУЖНЫЙ)
-#------------------------------------------------------------------------------
-# ⚠️ ИНСТРУКЦИЯ:
-# • Для одной видеокарты: выполните ТОЛЬКО один сценарий (А, Б или В)
-# • Для гибридной (Intel/AMD iGPU + NVIDIA dGPU): выполните ШАГ 1 + Сценарий А/Б + Сценарий Г
-# • Удалите символ # только перед командами, которые нужно выполнить
-# • Удалите не нужные сценарии, что-бы не было путаницы и ошибок
-
-# >>> [СЦЕНАРИЙ А] INTEL (Встроенная графика) <<<
-# 📦 intel-media-driver : VA-API для аппаратного декодирования видео.
-# 📦 vulkan-intel       : Драйвер Vulkan для Intel (критично для игр/Steam).
-# 📦 lib32-*            : 32-битные версии для поддержки Steam/Proton.
-# pacman -S --noconfirm intel-media-driver vulkan-intel lib32-vulkan-intel
-
-# >>> [СЦЕНАРИЙ Б] AMD (Radeon / APU) <<<
-# 📦 libva-mesa-driver  : VA-API драйвер для AMD.
-# 📦 vulkan-radeon      : Драйвер Vulkan для AMD (критично для игр/Steam).
-# 📦 lib32-*            : 32-битные версии для поддержки Steam/Proton.
-# pacman -S --noconfirm libva-mesa-driver lib32-libva-mesa-driver vulkan-radeon lib32-vulkan-radeon
-
-# >>> [СЦЕНАРИЙ В] NVIDIA (ОДИНОЧНАЯ, ДЕСКТОП / ПК) <<<
-# ⚠️ Выполнять ТОЛЬКО если в системе одна видеокарта NVIDIA (без iGPU)!
-# 📦 nvidia-open-dkms        : Драйвер с открытыми модулями ядра (для всех карт).
-# 📦 nvidia-utils       : Утилиты и библиотеки (включая VA-API).
-# 📦 lib32-nvidia-utils : 32-битные библиотеки для игр (Steam/Proton).
-# 📦 nvidia-settings    : Панель управления настройками GPU.
-# pacman -S --noconfirm nvidia-open-dkms nvidia-utils lib32-nvidia-utils nvidia-settings
-
-# --- Настройки ядра и модулей (ТОЛЬКО ДЛЯ ОДИНОЧНОЙ NVIDIA) ---
-# 📋 1. Добавить параметр ядра nvidia-drm.modeset=1 в GRUB
-# ✅ Включает DRM KMS, что обязательно для Wayland и корректного пробуждения.
-# sed -i -E 's/^(GRUB_CMDLINE_LINUX_DEFAULT="[^"]*)"/\1 nvidia-drm.modeset=1"/' /etc/default/grub
-
-# 📋 2. Конфигурация модулей (modprobe) — ТОЛЬКО ДЛЯ ОДИНОЧНОЙ NVIDIA (ПК)
-# ✅ Создаёт файл с параметрами для сохранения VRAM при сне/гибернации.
-# echo "options nvidia-drm modeset=1" > /etc/modprobe.d/nvidia.conf
-# echo "options nvidia NVreg_PreserveVideoMemoryAllocations=1" >> /etc/modprobe.d/nvidia.conf
-# echo "options nvidia NVreg_TemporaryFilePath=/var/tmp" >> /etc/modprobe.d/nvidia.conf
-
-# 📋 3. Включение системных служб управления сном/гибернацией
-# ✅ КРИТИЧЕСКИ ВАЖНО ДЛЯ ПК С ОДНОЙ NVIDIA:
-#    Службы сохраняют VRAM в RAM перед сном. Без них будет чёрный экран при пробуждении.
-# systemctl enable nvidia-suspend.service nvidia-hibernate.service nvidia-resume.service
-
-# 📋 4. Пересобрать initramfs и обновить GRUB
-# mkinitcpio -P
-# grub-mkconfig -o /boot/grub/grub.cfg
-
-# >>> [СЦЕНАРИЙ Г] ГИБРИДНАЯ ГРАФИКА (Intel/AMD iGPU + NVIDIA dGPU) <<<
-# 📦 1. Установка драйверов NVIDIA и инструментов управления.
-# Для управления питанием dGPU выберите ОДИН метод:
-#   - Метод 1: switcheroo-control (интеграция в GUI, современный, рекомендуется)
-#   - Метод 2: nvidia-prime (запуск через prime-run в терминале)
-# Раскомментируйте нужные строки:
-# pacman -S --noconfirm nvidia-open-dkms nvidia-utils lib32-nvidia-utils nvidia-settings
-# pacman -S --noconfirm switcheroo-control   # Метод 1
-# pacman -S --noconfirm nvidia-prime         # Метод 2
-
-# 📋 2. Настройка параметров ядра (GRUB) – ОБЯЗАТЕЛЬНО ДЛЯ ГИБРИДА!
-# Добавляем:
-#   - nvidia-drm.modeset=1 (для Wayland и корректного пробуждения)
-#   - nvidia.NVreg_PreserveVideoMemoryAllocations=0 (освобождает видеопамять)
-#   - resume_offset=0 (помогает ядру найти образ гибернации)
-# sed -i -E 's/^(GRUB_CMDLINE_LINUX_DEFAULT="[^"]*)"/\1 nvidia-drm.modeset=1 nvidia.NVreg_PreserveVideoMemoryAllocations=0 resume_offset=0"/' /etc/default/grub
-
-# 📋 3. Создание скрипта для выгрузки модулей NVIDIA перед гибернацией.
-# ✅ Гарантирует, что дискретная карта не помешает сохранению образа гибернации.
-# ❗ БЕЗ ЭТОГО СКРИПТА ГИБЕРНАЦИЯ НА ГИБРИДНЫХ НОУТБУКАХ НЕ РАБОТАЕТ!
-# echo '#!/bin/sh' > /usr/lib/systemd/system-sleep/nvidia.sh
-# echo "case \$1 in" >> /usr/lib/systemd/system-sleep/nvidia.sh
-# echo "    pre)" >> /usr/lib/systemd/system-sleep/nvidia.sh
-# echo "        rmmod nvidia_drm nvidia_uvm nvidia_modeset nvidia 2>/dev/null" >> /usr/lib/systemd/system-sleep/nvidia.sh
-# echo "        sleep 1" >> /usr/lib/systemd/system-sleep/nvidia.sh
-# echo "        ;;" >> /usr/lib/systemd/system-sleep/nvidia.sh
-# echo "    post)" >> /usr/lib/systemd/system-sleep/nvidia.sh
-# echo "        ;;" >> /usr/lib/systemd/system-sleep/nvidia.sh
-# echo "esac" >> /usr/lib/systemd/system-sleep/nvidia.sh
-# chmod +x /usr/lib/systemd/system-sleep/nvidia.sh
-
-# ⛔ КАТЕГОРИЧЕСКИ НЕЛЬЗЯ ДЛЯ ГИБРИДНОГО НОУТБУКА:
-# • Включать службы: nvidia-suspend.service, nvidia-hibernate.service, nvidia-resume.service
-#   (systemctl enable nvidia-suspend.service и т.п.) – приведёт к kernel panic!
-# • Создавать /etc/modprobe.d/nvidia.conf с опцией NVreg_PreserveVideoMemoryAllocations=1
-#   (она предназначена только для ПК с одной NVIDIA, на ноутбуке вызовет конфликты с Runtime PM).
-
-# 📋 4. Добавление модуля nvme в initramfs (КРИТИЧНО ДЛЯ ГИБЕРНАЦИИ НА NVME)
-# ✅ Добавляет nvme к уже существующим модулям (btrfs из Блока 12).
-# sed -i "s/^MODULES=(\(.*\))/MODULES=(\1 nvme)/" /etc/mkinitcpio.conf
-
-# 📋 5. Пересборка initramfs и обновление GRUB
-mkinitcpio -P
-grub-mkconfig -o /boot/grub/grub.cfg
-
-# 📋 6. (Опционально) Включение switcheroo, если выбрали метод 1
-# systemctl enable switcheroo-control.service
-clear
-#------------------------------------------------------------------------------
-# ✅ ПРОВЕРКА РЕЗУЛЬТАТОВ
-#------------------------------------------------------------------------------
-echo " "
-echo "#------------------------------------------------------------------------------"
-echo "# 🔍 ПРОВЕРКА НАСТРОЕК ГРАФИКИ"
-echo "#------------------------------------------------------------------------------"
-echo "Параметры ядра GRUB:"
-grep "GRUB_CMDLINE_LINUX_DEFAULT" /etc/default/grub
-echo ""
-# Если сценарий В (одиночная NVIDIA) – покажет файл modprobe:
-if [ -f /etc/modprobe.d/nvidia.conf ]; then
-  echo "Содержимое /etc/modprobe.d/nvidia.conf:"
-  cat /etc/modprobe.d/nvidia.conf
-fi
-echo ""
-# Если сценарий Г (гибрид) – покажет скрипт system-sleep:
-if [ -f /usr/lib/systemd/system-sleep/nvidia.sh ]; then
-  echo "Скрипт выгрузки NVIDIA перед сном:"
-  ls -l /usr/lib/systemd/system-sleep/nvidia.sh
-fi
-echo ""
-echo "Хуки mkinitcpio:"
-grep "^HOOKS=" /etc/mkinitcpio.conf
-echo ""
-echo "Модули mkinitcpio:"
-grep "^MODULES=" /etc/mkinitcpio.conf
-echo ""
-echo "#------------------------------------------------------------------------------"
-echo "# 🧭 ЗАВЕРШЕНИЕ БЛОКА 14   "
-echo "#------------------------------------------------------------------------------"
-echo "# ✅ ВСЕ ДЕЙСТВИЯ ВЫПОЛНЕНЫ.   "
-echo "# ⚠️ НЕ ВЫХОДИТЕ из chroot!   "
-echo "# 📌 Убедитесь, что вы выбрали ПРАВИЛЬНЫЙ сценарий и службы гибернации.   "
-echo "# ➡️ ПРОДОЛЖИТЕ УСТАНОВКУ:   "
-echo "    "
-#################################################################
-
-
-
-
-
-
-#################################################################
-# 🖥️  [CHROOT] БЛОК 15: УСТАНОВКА В VIRTUALBOX
+# 🖥️  [CHROOT] БЛОК 14: УСТАНОВКА В VIRTUALBOX
 #################################################################
 # ℹ️ Зачем: Настройка интеграции с VirtualBox (гостевые дополнения).
 # 💡 Включает: vboxguest, vboxsf, vboxvideo, общие папки.
@@ -1466,7 +1307,7 @@ echo " "
 
 
 #################################################################
-# 🖥️  [CHROOT] БЛОК 16: УСТАНОВКА ГРАФИЧЕСКОЙ СРЕДЫ (DE/WM)
+# 🖥️  [CHROOT] БЛОК 15: УСТАНОВКА ГРАФИЧЕСКОЙ СРЕДЫ (DE/WM)
 #################################################################
 # ℹ️ Зачем: Установка выбранного окружения рабочего стола.
 # 💡 Включает: KDE Plasma, GNOME, XFCE4, MATE, Cinnamon, LXQT, LXDE.
@@ -1745,8 +1586,9 @@ exit
 
 
 
+
 #################################################################
-# 🧹  [LIVE] БЛОК 17: ЗАВЕРШЕНИЕ УСТАНОВКИ
+# 🧹  [LIVE] БЛОК 16: ЗАВЕРШЕНИЕ УСТАНОВКИ
 #################################################################
 umount -R /mnt
 swapoff -a
@@ -1773,6 +1615,4 @@ rm -r .ssh/
 #
 # 🎉 Добро пожаловать в мир Arch Linux!
 #
-#################################################################
-#    - При проблемах с Wayland: проверьте параметр modeset=1 в cmdline.
 #################################################################
