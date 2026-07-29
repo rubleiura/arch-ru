@@ -169,7 +169,7 @@ git clone https://github.com/rubleiura/arch-ru
 
 | Симптом                                    | Вероятная причина                                                 | Решение                                                                                         |
 |:-------------------------------------------|:------------------------------------------------------------------|:------------------------------------------------------------------------------------------------|
-| Чёрный экран / зависание при загрузке      | Отсутствуют параметры `rd.luks`, `rd.lvm` или не собран initramfs | Проверьте `БЛОК 12`. Выполните `dracut --force` и `grub-mkconfig`.                              |
+| Чёрный экран / зависание при загрузке      | Отсутствуют параметры `rd.luks`, `rd.lvm` или не собран initramfs | Проверьте `БЛОК 12`. Выполните `mkinitcpio -P` и `grub-mkconfig`.                              |
 | GRUB не видит систему                      | Ошибка в `--efi-directory` или отсутствии `part_gpt`              | UEFI: `grub-install --target=x86_64-efi --efi-directory=/boot`. BIOS: раздел `EF02` обязателен. |
 | `unrecognized filesystem` при монтировании | Ошибка в `/etc/fstab`                                             | Используйте `genfstab -U /mnt`. Для BTRFS убедитесь, что указано `subvol=@`.                    |
 | Wayland не работает (NVIDIA)               | Отключён KMS                                                      | Добавьте `nvidia-drm.modeset=1` в `GRUB_CMDLINE_LINUX_DEFAULT`, пересоберите GRUB и initramfs.  |
