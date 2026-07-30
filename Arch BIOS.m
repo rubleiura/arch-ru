@@ -804,7 +804,7 @@ echo " "
 echo " "
 echo " 🔍 Проверка времени."
 echo " "
-timedatectl status
+timedatectl
 echo " "
 date
 echo " "
