@@ -1350,7 +1350,9 @@ pacman -S --noconfirm vulkan-tools libva-utils mesa-utils mesa-demos glmark2 nvt
 #    в состав пакетов mesa и lib32-mesa (установлены в Блоке 13). 
 #    Отдельного пакета libva-mesa-driver в Arch Linux НЕ СУЩЕСТВУЕТ!
 #
-pacman -S --noconfirm vulkan-radeon lib32-vulkan-radeon corectrl
+# 📦 vulkan-radeon       : Драйвер Vulkan для AMD (критично для игр/Steam).
+# 📦 vulkan-radeon       : Драйвер Vulkan для AMD (критично для игр/Steam).
+# pacman -S --noconfirm vulkan-radeon lib32-vulkan-radeon corectrl
 
 
 # ==============================================================================
