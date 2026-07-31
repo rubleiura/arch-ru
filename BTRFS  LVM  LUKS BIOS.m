@@ -1319,7 +1319,7 @@ clear
 # 📦 nvtop          : Монитор GPU (как htop, но для видеокарт AMD/NVIDIA/Intel).
 # 📦 vkd3d/lib32-vkd3d : Транслятор DirectX 12 в Vulkan (КРИТИЧЕСКИ ВАЖНО для игр через Proton/Steam!).
 
-# pacman -S --noconfirm vulkan-tools libva-utils mesa-utils mesa-demos glmark2 nvtop vkd3d lib32-vkd3d
+pacman -S --noconfirm vulkan-tools libva-utils mesa-utils mesa-demos glmark2 nvtop vkd3d lib32-vkd3d
 
 #------------------------------------------------------------------------------
 # ШАГ 2: ВЫБОР СЦЕНАРИЯ ВИДЕО (ВЫПОЛНИТЬ ТОЛЬКО ОДИН ВАРИАНТ)
@@ -1349,7 +1349,7 @@ clear
 #    в состав пакетов mesa и lib32-mesa (установлены в Блоке 13). 
 #    Отдельного пакета libva-mesa-driver в Arch Linux НЕ СУЩЕСТВУЕТ!
 #
-pacman -S --noconfirm vulkan-radeon lib32-vulkan-radeon corectrl
+# pacman -S --noconfirm vulkan-radeon lib32-vulkan-radeon corectrl
 
 
 # ==============================================================================
