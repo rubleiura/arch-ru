@@ -1129,8 +1129,6 @@ pacman -S --noconfirm dosfstools ntfs-3g exfatprogs gptfdisk fuse2 fuse3 fuseiso
 # #------------------------------------------------------------------------------
 # power-profiles-daemon — системный демон (служба) питания
 pacman -S --noconfirm power-profiles-daemon
-# powerprofilesctl — это CLI‑утилита управлениями профилями энергопотребления через сервис
-pacman -S --noconfirm powerprofilesctl
 # запустить соответствующий сервис:
 systemctl enable power-profiles-daemon.service
 # 📦 dbus-broker — шина D-BUS.
