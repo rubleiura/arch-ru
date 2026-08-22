@@ -307,8 +307,7 @@ echo "--save /etc/pacman.d/mirrorlist" >> /etc/xdg/reflector/reflector.conf
 # ✅ Файл будет автоматически перезаписываться при запуске reflector
 
 # 🔧 8. ПРИМЕНЕНИЕ НАСТРОЕК (выполнить после создания конфига)
-systemctl restart reflector.service   # В LIVE-среде: применить сразу
-# systemctl enable reflector.timer      # В CHROOT/системе: автообновление каждые 24ч
+systemctl restart reflector.service
 clear
 echo " "
 # 🔄 Принудительное обновление базы данных пакетов
@@ -783,8 +782,7 @@ echo "--save /etc/pacman.d/mirrorlist" >> /etc/xdg/reflector/reflector.conf
 # ✅ Файл будет автоматически перезаписываться при запуске reflector
 
 # 🔧 8. ПРИМЕНЕНИЕ НАСТРОЕК (выполнить после создания конфига)
-# systemctl restart reflector.service   # В LIVE-среде: применить сразу
-systemctl enable reflector.timer      # В CHROOT/системе: автообновление каждые 24ч
+systemctl enable reflector.timer
 # #------------------------------------------------------------------------------
 # ШАГ 6: ПРОВЕРКА РЕЗУЛЬТАТОВ
 # #------------------------------------------------------------------------------
