@@ -1185,7 +1185,7 @@ switcherooctl list
 # -------------------------------------------------------------------------------
 sudo systemctl disable --now power-profiles-daemon
 sudo pacman -Rns power-profiles-daemon
-sudo pacman -S tlp tlp-rdw tlp-pd
+sudo pacman -S tlp tlp-rdw tlp-pd tlpui
 
 # [ДЛЯ ГИБРИДНЫХ СИСТЕМ: INTEL+NVIDIA / AMD+NVIDIA] Установка службы переключения:
 sudo pacman -S switcheroo-control
@@ -1296,7 +1296,7 @@ sudo systemctl disable --now tlp.service tlp-pd.service NetworkManager-dispatche
 sudo rm -f /etc/tlp.conf
 
 # 3. Заставляем pacman начисто перезаписать файл конфигурации оригиналом из репозитория:
-sudo pacman -S --noconfirm tlp tlp-rdw
+sudo pacman -S --noconfirm tlp tlp-rdw tlpui
 
 # 4. Активируем и запускаем службы заново:
 sudo systemctl enable tlp.service
