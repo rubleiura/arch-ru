@@ -1756,8 +1756,9 @@ pacman -S --noconfirm ffmpegthumbnailer poppler-glib
 # 📦 GVFS для монтирования устройств и сетевых дисков
 pacman -S --noconfirm gvfs gvfs-afc gvfs-dnssd gvfs-goa gvfs-gphoto2 gvfs-mtp gvfs-nfs gvfs-onedrive gvfs-smb gvfs-wsdd
 # 📦 Дисплейный менеджер LightDM
-pacman -S --noconfirm lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
+pacman -S --noconfirm lightdm  lightdm-slick-greeter
 systemctl enable lightdm.service
+sed -i 's/#greeter-session=example-gtk-gnome/greeter-session=lightdm-slick-greeter/' /etc/lightdm/lightdm.conf
 # 📋 Обновление конфигурации
 grub-mkconfig -o /boot/grub/grub.cfg
 mkinitcpio -P
