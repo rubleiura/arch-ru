@@ -167,7 +167,7 @@ sudo cp ~/.nanorc /root/.nanorc
 
 #   Установка Zsh
 sudo pacman -Syy
-sudo pacman -S --noconfirm zsh fastfetch hyfetch
+sudo pacman -S --noconfirm zsh fastfetch hyfetch macchina
 #   Установка Oh My Zsh
 sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
 
