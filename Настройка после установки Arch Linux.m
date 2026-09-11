@@ -274,8 +274,8 @@ chsh -s $(which zsh)
 # 🔧 ШАГ 1: Установка пакетов
 yay -S --noconfirm grub-customizer grub2-theme-arch-leap update-grub
 
-# 🔧 ШАГ 2: Проверка установки темы
-# Тема устанавливается в директорию /boot/grub/themes/arch-leap
+# 🔧 ШАГ 2 Ручная настройка темы, если не ставится grub-customizer
+# Место установки темы: /boot/grub/themes/arch-leap
 ls -la /boot/grub/themes/arch-leap/theme.txt
 
 # 🔧 ШАГ 3: Активация темы GRUB
