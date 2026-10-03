@@ -1647,6 +1647,12 @@ pacman -S --noconfirm gvfs gvfs-afc gvfs-dnssd gvfs-goa gvfs-gphoto2 gvfs-mtp gv
 # 📦 Дисплейный менеджер SDDM
 pacman -S --noconfirm sddm
 systemctl enable sddm.service
+# 📦 Дисплейный менеджер SDDM
+pacman -S --noconfirm sddm
+systemctl enable sddm.service
+# 🎨 SDDM: ВКЛЮЧЕНИЕ РОДНОЙ ТЕМЫ KDE BREEZE
+mkdir -p /etc/sddm.conf.d
+printf '[Theme]\nCurrent=breeze\n' > /etc/sddm.conf.d/10-theme.conf
 # 📋 Обновление конфигурации
 grub-mkconfig -o /boot/grub/grub.cfg
 mkinitcpio -P
