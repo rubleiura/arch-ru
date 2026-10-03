@@ -1013,9 +1013,10 @@ pacman -Syy
 pacman -S --noconfirm linux-lts linux-lts-headers linux-firmware
 # 📦 grub — загрузчик системы для BIOS (~5 МБ)
 # 📦 grub-btrfs — интеграция снапшотов BTRFS в GRUB (~0.2 МБ)
+# 📦 inotify-tools — набор утилит inotify для мониторинга событий файловой системы в реальном времени
 # 📦 os-prober — обнаружение других ОС на диске (~0.1 МБ)
 # ⚠️ В BIOS версии НЕ нужен efibootmgr!
-pacman -S --noconfirm grub grub-btrfs os-prober
+pacman -S --noconfirm grub grub-btrfs inotify-tools os-prober
 # 📦 networkmanager — управление сетевыми подключениями (~2 МБ)
 # 📦 openssh — сервер и клиент SSH для удалённого доступа (~2 МБ)
 # 📦 plymouth — экран загрузки с анимацией (~3 МБ)
