@@ -1591,6 +1591,9 @@ clear
 # 📦 Установка KDE Plasma и базовых приложений
 pacman -S --noconfirm plasma-desktop breeze breeze-cursors breeze-gtk breeze-plymouth kdecoration kinfocenter libplasma qqc2-breeze-style kdeplasma-addons kwayland kwin kwin-x11 layer-shell-qt plasma-integration plasma-workspace plasma-workspace-wallpapers kde-gtk-config plymouth-kcm sddm-kcm systemsettings bluedevil kpipewire kscreen libkscreen plasma-nm plasma-pa powerdevil ksystemstats kwallet-pam kwrited plasma-login-manager polkit-kde-agent plasma-browser-integration
 pacman -S --noconfirm kde-system dolphin-plugins kate konsole gwenview elisa okular ark
+# discover— Центр приложений Discover
+# packagekit-qt6 — библиотека для управления программным обеспечением и установки обновлений.
+pacman -S --noconfirm discover packagekit-qt6
 # 📦 Кодеки, интеграция, порталы Wayland/XDG и поддержка Wayland для Qt
 pacman -S --noconfirm ffmpegthumbs poppler-glib qt6-wayland
 # 📦 GVFS для монтирования устройств и сетевых дисков (SMB/NFS/OneDrive/MTP)
@@ -1599,12 +1602,26 @@ pacman -S --noconfirm gvfs gvfs-afc gvfs-dnssd gvfs-goa gvfs-gphoto2 gvfs-mtp gv
 # 📦 Дисплейный менеджер SDDM
 pacman -S --noconfirm sddm
 systemctl enable sddm.service
-# 📦 Дисплейный менеджер SDDM
-pacman -S --noconfirm sddm
-systemctl enable sddm.service
-# 🎨 SDDM: ВКЛЮЧЕНИЕ РОДНОЙ ТЕМЫ KDE BREEZE
+# 🎨 Тема входа Breeze — без неё SDDM показывает блёклую maldives
 mkdir -p /etc/sddm.conf.d
 printf '[Theme]\nCurrent=breeze\n' > /etc/sddm.conf.d/10-theme.conf
+# 🎨 Тема Plymouth Breeze вместо дефолтной bgrt (-R сразу пересоберёт initramfs)
+plymouth-set-default-theme -R breeze
+# 🖥️ Экран входа тоже в Wayland: композитор kwin_wayland вместо дефолтного weston.
+#    Режим экспериментальный, Numlock в нём не настраивается. Чёрный экран на
+#    NVIDIA (Сценарии В/Г) — удалите /etc/sddm.conf.d/10-wayland.conf (откат в X11).
+cat > /etc/sddm.conf.d/10-wayland.conf << "EOF"
+[General]
+DisplayServer=wayland
+GreeterEnvironment=QT_WAYLAND_SHELL_INTEGRATION=layer-shell
+
+[Wayland]
+CompositorCommand=kwin_wayland --drm --no-lockscreen --no-global-shortcuts --locale1
+EOF
+# 🎬 Пауза 2 с перед стартом SDDM: анимация Plymouth доигрывает, переход плавный
+#    (проверка: systemctl status sddm → строка «Drop-In:»; sleep — под длину анимации)
+mkdir -p /etc/systemd/system/sddm.service.d
+printf '[Service]\nExecStartPre=/bin/sleep 2\n' > /etc/systemd/system/sddm.service.d/override.conf
 # 📋 Обновление конфигурации
 grub-mkconfig -o /boot/grub/grub.cfg
 mkinitcpio -P
