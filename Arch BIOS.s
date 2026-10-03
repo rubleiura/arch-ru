@@ -1000,7 +1000,7 @@ grub-install --target=i386-pc --recheck /dev/sdx
 # #------------------------------------------------------------------------------
 # 📋 Настройка HOOKS mkinitcpio
 # ✅ Полная замена строки HOOKS на безопасную последовательность.
-sed -i "s|^HOOKS=(.*)|HOOKS=(systemd autodetect microcode modconf kms keyboard sd-vconsole block filesystems fsck)|" /etc/mkinitcpio.conf
+sed -i "s|^HOOKS=(.*)|HOOKS=(systemd autodetect microcode modconf kms keyboard sd-vconsole plymouth block filesystems fsck)|" /etc/mkinitcpio.conf
 # 📋 Настройка MODULES mkinitcpio
 # ✅ Универсальная команда: добавляет модули, сохраняя существующие (если есть).
 sed -i "s/MODULES=()/MODULES=(btrfs)/" /etc/mkinitcpio.conf
