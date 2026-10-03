@@ -32,32 +32,10 @@ makepkg -si --noconfirm
 cd ..
 rm -rf yay
 
-#  НАСТРОЙКА BTRFS И SNAPPER
-# Установка официальных пакетов для работы с Btrfs и снапшотами.
-sudo pacman -Syy
-sudo pacman -Sy --needed --noconfirm snapper snap-pac btrfsmaintenance btrfs-assistant
-# Установка дополнительных утилит из AUR (требуется yay).
-yay -Syy
-yay -Sy --noconfirm snapper-support snapper-tools
-# Включение таймера автоматического создания снапшотов.
-sudo systemctl enable --now snapper-timeline.timer
-
-# 📌 ДЕЙСТВИЯ ПОЛЬЗОВАТЕЛЯ:
-#   1. Запустите 'Btrfs Assistant' из меню приложений.
-#   2. Настройте расписание снапшотов (Timeline).
-#   3. При обновлении системы снапшоты будут создаваться автоматически.
-#   4. В меню GRUB появятся пункты для отката (rollback).
-
 # 0.3 Приоритет: [ОБЯЗАТЕЛЬНО ДЛЯ SSD]
 # ⚠️ Важно: Выполняется ПОСЛЕ первой загрузки в установленную систему.
 # Включить еженедельную очистку SSD (TRIM) для сохранения скорости диска
 sudo systemctl enable fstrim.timer
-#   РЕЗЕРВНОЕ КОПИРОВАНИЕ BTRFS (BTRBK)
-# 📦 btrbk — инкрементальное резервное копирование BTRFS на внешний диск/сервер
-sudo pacman -S --noconfirm btrbk
-# 👤 Настройте /etc/btrbk/btrbk.conf под ваши разделы и внешний диск
-#    Пример: btrbk snapshot /, затем btrbk run для отправки на внешний диск
-
 
 
 
