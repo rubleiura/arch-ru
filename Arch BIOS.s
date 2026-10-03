@@ -966,8 +966,6 @@ pacman -Syy
 # 📦 linux-lts-headers — заголовки ядра для драйверов (~15 МБ)
 # 📦 linux-firmware — прошивки для оборудования (~200 МБ)
 pacman -S --noconfirm linux-lts linux-lts-headers linux-firmware
-#    убираем: оставляем только LTS.
-pacman -Rns --noconfirm linux
 # 📦 grub — загрузчик системы для BIOS (~5 МБ)
 # 📦 grub-btrfs — интеграция снапшотов BTRFS в GRUB (~0.2 МБ)
 # 📦 inotify-tools — набор утилит inotify для мониторинга событий файловой системы в реальном времени
