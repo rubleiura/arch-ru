@@ -968,8 +968,9 @@ pacman -Syy
 pacman -S --noconfirm linux-lts linux-lts-headers linux-firmware
 # 📦 grub — загрузчик системы для BIOS (~5 МБ)
 # 📦 grub-btrfs — интеграция снапшотов BTRFS в GRUB (~0.2 МБ)
+# 📦 inotify-tools — набор утилит inotify для мониторинга событий файловой системы в реальном времени
 # 📦 os-prober — обнаружение других ОС на диске (~0.1 МБ)
-pacman -S --noconfirm grub grub-btrfs os-prober
+pacman -S --noconfirm grub grub-btrfs inotify-tools os-prober
 # 📦 networkmanager — управление сетевыми подключениями (~2 МБ)
 # 📦 wpa_supplicant — поддержка WPA/WPA2 для WiFi (~0.8 МБ)
 # 📦 wireless_tools — утилиты для беспроводных сетей (~0.2 МБ)
