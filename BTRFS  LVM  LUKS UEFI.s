@@ -1639,8 +1639,6 @@ clear
 # 📦 Установка KDE Plasma и базовых приложений
 pacman -S --noconfirm plasma-desktop breeze breeze-cursors breeze-gtk breeze-plymouth kdecoration kinfocenter libplasma qqc2-breeze-style kdeplasma-addons kwayland kwin kwin-x11 layer-shell-qt plasma-integration plasma-workspace plasma-workspace-wallpapers kde-gtk-config plymouth-kcm sddm-kcm systemsettings bluedevil kpipewire kscreen libkscreen plasma-nm plasma-pa powerdevil ksystemstats kwallet-pam kwrited plasma-login-manager polkit-kde-agent plasma-browser-integration
 pacman -S --noconfirm kde-system dolphin-plugins kate konsole gwenview elisa okular ark
-# 🌐 Браузер — must have для любого пользователя
-pacman -S --noconfirm chromium
 # 📦 Кодеки, интеграция, порталы Wayland/XDG и поддержка Wayland для Qt
 pacman -S --noconfirm ffmpegthumbs poppler-glib qt6-wayland
 # 📦 GVFS для монтирования устройств и сетевых дисков (SMB/NFS/OneDrive/MTP)
@@ -1674,8 +1672,6 @@ exit
 clear
 # 📦 Установка GNOME и утилит
 pacman -S --noconfirm gnome gnome-tweaks gnome-themes-extra gnome-shell-extensions dconf-editor file-roller gnome-browser-connector
-# 🌐 Браузер — must have для любого пользователя
-pacman -S --noconfirm chromium
 # 📦 PackageKit (GTK), порталы и поддержка Wayland
 pacman -S --noconfirm packagekit gnome-packagekit xdg-desktop-portal xdg-desktop-portal-gnome
 # 📦 Мультимедиа: универсальный плеер и просмотрщик изображений
@@ -1722,8 +1718,6 @@ clear
 # 📦 Установка полной группы пакетов COSMIC из официального репозитория [extra]
 # 💡 Группа `cosmic` включает все основные компоненты, зависимости и порталы.
 pacman -S --noconfirm cosmic
-# 🌐 Браузер — must have для любого пользователя
-pacman -S --noconfirm chromium
 # 📦 Родной дисплейный менеджер cosmic-greeter (на базе greetd, рекомендовано Arch Wiki)
 pacman -S --noconfirm cosmic-greeter
 # ⚙️ Включение службы cosmic-greeter для автоматического запуска при загрузке
@@ -1761,8 +1755,6 @@ exit
 clear
 # 📦 Установка XFCE4 и дополнений
 pacman -S --noconfirm xfce4 xfce4-goodies mugshot pavucontrol ristretto thunar-archive-plugin
-# 🌐 Браузер — must have для любого пользователя
-pacman -S --noconfirm chromium
 # 🔐 Polkit-агент для GTK-окружений (обязателен для привилегированных GUI-операций: GParted, монтирование USB)
 pacman -S --noconfirm polkit-gnome
 # 📦 Сетевые апплеты
@@ -1801,8 +1793,6 @@ exit
 clear
 # 📦 Установка MATE и дополнений
 pacman -S --noconfirm mate mate-extra
-# 🌐 Браузер — must have для любого пользователя
-pacman -S --noconfirm chromium
 # 🔐 Polkit-агент для GTK-окружений (обязателен для привилегированных GUI-операций: GParted, монтирование USB)
 pacman -S --noconfirm polkit-gnome
 # 📦 Сетевые апплеты
@@ -1841,8 +1831,6 @@ exit
 clear
 # 📦 Установка Cinnamon и утилит
 pacman -S --noconfirm cinnamon cinnamon-translations gnome-terminal evince
-# 🌐 Браузер — must have для любого пользователя
-pacman -S --noconfirm chromium
 # 🔐 Polkit-агент для GTK-окружений (обязателен для привилегированных GUI-операций: GParted, монтирование USB)
 pacman -S --noconfirm polkit-gnome
 # 📦 Сетевые апплеты
@@ -1882,8 +1870,6 @@ exit
 clear
 # 📦 Установка LXQT и компонентов
 pacman -S --noconfirm lxqt sddm breeze breeze-icons featherpad libstatgrab libsysstat
-# 🌐 Браузер — must have для любого пользователя
-pacman -S --noconfirm chromium
 # 🔐 Polkit-агент для GTK-окружений (обязателен для привилегированных GUI-операций: GParted, монтирование USB)
 pacman -S --noconfirm polkit-gnome
 # 📦 Сетевые апплеты
@@ -1921,8 +1907,6 @@ exit
 clear
 # 📦 Установка LXDE и компонентов
 pacman -S --noconfirm lxde featherpad thunar-archive-plugin udiskie xfce4-notifyd dunst picom
-# 🌐 Браузер — must have для любого пользователя
-pacman -S --noconfirm chromium
 # 🔐 Polkit-агент для GTK-окружений (обязателен для привилегированных GUI-операций: GParted, монтирование USB)
 pacman -S --noconfirm polkit-gnome
 # 📦 Сетевые апплеты
