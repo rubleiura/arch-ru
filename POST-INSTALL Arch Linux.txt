@@ -4,8 +4,8 @@
 # 📌 Пользователь: Юрий
 # 📌 Формат: Все пояснения в комментариях (#), команды открыты и готовы к копированию.
 # 📌 Совместимость: ВСЕ 6 макетов репозитория — GRUB-ветка («Arch UEFI/BIOS»,
-#    «BTRFS  LVM  LUKS UEFI/BIOS») и UKI-ветка («BTRFS  UKI Secure Boot UEFI»,
-#    «BTRFS LUKS2 UKI  SecureBoot UEFI»); snapper + btrfs-assistant.
+#    «BTRFS LVM LUKS UEFI/BIOS») и UKI-ветка («BTRFS UKI Secure Boot UEFI»,
+#    «BTRFS LUKS2 UKI SecureBoot UEFI»); snapper + btrfs-assistant.
 # 💡 Инструкция: Отмечайте [x] выполненные этапы. Команды копируйте по одной.
 #==============================================================================
 
@@ -556,7 +556,7 @@ sudo pacman -S --noconfirm vulkan-tools libva-utils mesa-utils mesa-demos glmark
 sudo su
 
 #==============================================================================
-# 🅰️ [GRUB-ВЕТКА] — «Arch UEFI/BIOS», «BTRFS  LVM  LUKS UEFI/BIOS»
+# 🅰️ [GRUB-ВЕТКА] — «Arch UEFI/BIOS», «BTRFS LVM LUKS UEFI/BIOS»
 #==============================================================================
 # Параметры ядра живут в /etc/default/grub; финал — mkinitcpio -P + grub-mkconfig.
 # 📌 LUKS-редакции: в GRUB_CMDLINE_LINUX_DEFAULT уже есть rd.luks.name=… и
@@ -601,12 +601,17 @@ sudo su
 # grub-mkconfig -o /boot/grub/grub.cfg
 
 #==============================================================================
-# 🅱️ [UKI-ВЕТКА] — «BTRFS  UKI Secure Boot UEFI», «BTRFS LUKS2 UKI  SecureBoot UEFI»
+# 🅱️ [UKI-ВЕТКА] — «BTRFS UKI Secure Boot UEFI», «BTRFS LUKS2 UKI SecureBoot UEFI»
 #==============================================================================
 # ❗ Файла /etc/default/grub здесь НЕТ: параметры ядра — в /etc/kernel/cmdline,
 #    grub-mkconfig не нужен (UKI пересобирается самим mkinitcpio -P).
-# ❗ Гибернации в UKI-ветке НЕТ (swap целиком в zram): resume_offset=0 и служба
-#    nvidia-hibernate не применяются — настраивается только сон (suspend).
+# ❗ В UKI-ветке ЕСТЬ дисковый swap и гибернация (редакции макетов v4.6 /
+#    luks-v1.5): незашифрованный макет — раздел sda3 (resume=UUID=…, при
+#    пробуждении пароль не спрашивается); LUKS2 — файл /swap/swapfile ВНУТРИ
+#    контейнера (resume=/dev/mapper/cryptroot + resume_offset=…, при
+#    пробуждении спрашивается пароль LUKS, снимок гибернации зашифрован).
+#    Параметры зашиты в подписанный UKI: после любой правки — пересборка
+#    (mkinitcpio -P) и переподпись (sbctl sign-all).
 # ❗ Secure Boot включён (ШАГ 0) → после пересборки ОБЯЗАТЕЛЬНЫ подписи sbctl:
 #    неподписанный UKI прошивка не запустит, а неподписанные модули NVIDIA
 #    ядро в lockdown не загрузит (в dmesg: «Key was rejected by service»).
@@ -659,13 +664,13 @@ sudo sbctl status
 # 📌 LUKS2-редакция: в cmdline уже есть rd.luks.name=… root=… — sed только дописывает.
 # sed -i 's/$/ nvidia-drm.modeset=1/' /etc/kernel/cmdline
 #
-# 📋 2. Конфигурация модулей (modprobe) для сохранения VRAM при сне
+# 📋 2. Конфигурация модулей (modprobe) для сохранения VRAM при сне/гибернации
 # echo "options nvidia-drm modeset=1" > /etc/modprobe.d/nvidia.conf
 # echo "options nvidia NVreg_PreserveVideoMemoryAllocations=1" >> /etc/modprobe.d/nvidia.conf
 # echo "options nvidia NVreg_TemporaryFilePath=/var/tmp" >> /etc/modprobe.d/nvidia.conf
 #
-# 📋 3. Включение служб управления сном (nvidia-hibernate не нужна — гибернации нет)
-# systemctl enable nvidia-suspend.service nvidia-resume.service
+# 📋 3. Включение системных служб управления сном/гибернацией (обязательно для ПК)
+# systemctl enable nvidia-suspend.service nvidia-hibernate.service nvidia-resume.service
 #
 # 📋 4. Пересобрать UKI (параметры ядра зашиты внутрь образа)
 # mkinitcpio -P
@@ -684,7 +689,9 @@ sudo sbctl status
 #   - nvidia-drm.modeset=1 (обязательно для Wayland и корректного переключения видеорежимов)
 #   - nvidia.NVreg_PreserveVideoMemoryAllocations=0 (предотвращает kernel panic при пробуждении,
 #     запрещая драйверу сохранять состояние VRAM, так как dGPU на ноутбуке обесточивается)
-#   - resume_offset=0 НЕ добавляется: гибернации в UKI-ветке нет (zram).
+#   - resume_offset=0 — ТОЛЬКО для незашифрованного UKI-макета (swap-раздел sda3:
+#     безвреден). В LUKS2-макете НЕ ДОБАВЛЯТЬ: в cmdline уже стоит РЕАЛЬНЫЙ
+#     resume_offset= swap-файла (БЛОК 12 макета) — обнуление сломает гибернацию.
 # sed -i 's/$/ nvidia-drm.modeset=1 nvidia.NVreg_PreserveVideoMemoryAllocations=0/' /etc/kernel/cmdline
 # 📋 2. Служба управления питанием dGPU (пакет из 1.2 СЦЕНАРИЯ Г / профиля chwd .prime)
 # systemctl enable switcheroo-control.service

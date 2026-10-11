@@ -4,7 +4,7 @@
 
 **Состав репозитория:** 6 макетов установки (два семейства загрузочных стеков) + 1 пост-установочный чек-лист + этот README.
 
-**Актуальность:** редакции макетов от `2026-10-08`, проверены на `mkinitcpio 42.2` / `linux-lts 6.18.55`. История правок каждой редакции — в шапке соответствующего `.txt`-файла.
+**Актуальность:** редакции макетов от `2026-10-08` (GRUB-ветка) и `2026-10-11` (UKI-ветка: `v4.6` — swap-раздел и гибернация; `luks-v1.5` — swap-ФАЙЛ внутри LUKS вместо раздела, **подтверждена прогоном владельца** (VirtualBox, 2026-10-11: установка, гибернация и пробуждение с запросом пароля LUKS — штатно); `v4.6` ждёт контрольного прогона). Имена файлов нормализованы 2026-10-11 (одинарные пробелы). Совместимость проверена на `mkinitcpio 42.2` / `linux-lts 6.18.55`. История правок каждой редакции — в шапке соответствующего `.txt`-файла.
 
 ---
 
@@ -39,7 +39,7 @@ git clone https://github.com/rubleiura/arch-ru && cd arch-ru
 |:---|:---|
 | Загрузочный носитель | Официальный Arch Linux Live ISO (способ 1) или любой Arch-based ISO с GUI (способ 2) |
 | Интернет | Пакеты ставятся из репозиториев; `БЛОК 0` определяет географию зеркал по IP |
-| Свободный диск | Разметка создаётся с нуля; для гибернации в GRUB-ветке swap-раздел должен быть **не меньше объёма RAM** |
+| Свободный диск | Разметка создаётся с нуля; для гибернации swap-раздел должен быть **не меньше объёма RAM** (во всех шести макетах) |
 | UEFI с возможностью сброса ключей | Только для UKI-макетов: `БЛОК 17` записывает свои ключи Secure Boot, прошивка должна допускать режим Setup |
 | Терминал шириной ≥ 80 колонок | Цветные окна проверок выровнены по 76 видимым колонкам |
 
@@ -97,28 +97,28 @@ git clone https://github.com/rubleiura/arch-ru && cd arch-ru
 |:---|:---|:---|:---|:---|:---|:---|
 | `Arch UEFI.txt` | UEFI (GPT) | GRUB + grub-btrfs | ❌ | ❌ | раздел на диске + zram | ❌ |
 | `Arch BIOS.txt` | BIOS/Legacy (GPT) | GRUB + grub-btrfs | ❌ | ❌ | раздел на диске + zram | ❌ |
-| `BTRFS  LVM  LUKS UEFI.txt` | UEFI (GPT) | GRUB + grub-btrfs | ✅ LUKS2 | ✅ | том LVM + zram | ❌ |
-| `BTRFS  LVM  LUKS BIOS.txt` | BIOS/Legacy (GPT) | GRUB + grub-btrfs | ✅ LUKS2 | ✅ | том LVM + zram | ❌ |
-| `BTRFS  UKI Secure Boot UEFI.txt` | UEFI (GPT) | systemd-boot + UKI | ❌ | ❌ | только zram | ✅ sbctl |
-| `BTRFS LUKS2 UKI  SecureBoot UEFI.txt` | UEFI (GPT) | systemd-boot + UKI | ✅ LUKS2 | ❌ | только zram | ✅ sbctl |
+| `BTRFS LVM LUKS UEFI.txt` | UEFI (GPT) | GRUB + grub-btrfs | ✅ LUKS2 | ✅ | том LVM + zram | ❌ |
+| `BTRFS LVM LUKS BIOS.txt` | BIOS/Legacy (GPT) | GRUB + grub-btrfs | ✅ LUKS2 | ✅ | том LVM + zram | ❌ |
+| `BTRFS UKI Secure Boot UEFI.txt` | UEFI (GPT) | systemd-boot + UKI | ❌ | ❌ | раздел на диске + zram | ✅ sbctl |
+| `BTRFS LUKS2 UKI SecureBoot UEFI.txt` | UEFI (GPT) | systemd-boot + UKI | ✅ LUKS2 (корень и swap-файл) | ❌ | файл внутри LUKS + zram | ✅ sbctl |
 | `POST-INSTALL Arch Linux.txt` | любая | любой | любое | любое | — | — |
 
 **Кому какой:**
 
 - `Arch UEFI.txt` — **лучший старт для новичков**: современное оборудование, минимум шагов.
 - `Arch BIOS.txt` — старые ПК и legacy-загрузка; нужен раздел BIOS Boot (`ef02`).
-- `BTRFS  LVM  LUKS UEFI.txt` и `BTRFS  LVM  LUKS BIOS.txt` — максимальная безопасность на GRUB: пароль при каждой загрузке, гибкое управление томами, есть гибернация. BIOS-редакция требует отдельный незашифрованный `/boot` (ext4).
-- `BTRFS  UKI Secure Boot UEFI.txt` — 🔐 проверяемая цепочка загрузки: systemd-boot + единый образ ядра (UKI), свои ключи Secure Boot через `sbctl`.
-- `BTRFS LUKS2 UKI  SecureBoot UEFI.txt` — 🔐 максимум защиты: шифрованный корень + Secure Boot. Дополнительно: обязательный шаг `cryptsetup luksHeaderBackup` на внешний носитель в `БЛОКЕ 20` и `БЛОК 19` аварийного восстановления с live-ISO.
+- `BTRFS LVM LUKS UEFI.txt` и `BTRFS LVM LUKS BIOS.txt` — максимальная безопасность на GRUB: пароль при каждой загрузке, гибкое управление томами, есть гибернация. BIOS-редакция требует отдельный незашифрованный `/boot` (ext4).
+- `BTRFS UKI Secure Boot UEFI.txt` — 🔐 проверяемая цепочка загрузки: systemd-boot + единый образ ядра (UKI), свои ключи Secure Boot через `sbctl`.
+- `BTRFS LUKS2 UKI SecureBoot UEFI.txt` — 🔐 максимум защиты: шифрованный корень + Secure Boot. Дополнительно: обязательный шаг `cryptsetup luksHeaderBackup` на внешний носитель в `БЛОКЕ 20` и `БЛОК 19` аварийного восстановления с live-ISO. Swap — зашифрованный файл `/swap/swapfile` внутри контейнера (подтом `@swap`, редакции `luks-v1.5`+): снимок гибернации защищён LUKS, при пробуждении запрашивается пароль.
 - `POST-INSTALL Arch Linux.txt` — 📦 выполняется **строго после** первой загрузки в новую систему.
 
-> 🔀 **Два семейства макетов.** Файлы `Arch …` и `BTRFS  LVM  LUKS …` построены на **GRUB** и используют реальный swap-раздел/том (возможен гибернационный сценарий через `resume=UUID=…`). Файлы `BTRFS … UKI …` построены на **systemd-boot + UKI** и **sbctl**, swap у них целиком в zram, гибернации нет. Это не версии одного макета, а разные загрузочные стеки: GRUB проще, UKI + Secure Boot — проверяемая цепочка загрузки и подписанные параметры ядра.
+> 🔀 **Два семейства макетов.** Файлы `Arch …` и `BTRFS LVM LUKS …` построены на **GRUB**; файлы `BTRFS … UKI …` — на **systemd-boot + UKI** и **sbctl**. Это не версии одного макета, а разные загрузочные стеки: GRUB проще, UKI + Secure Boot — проверяемая цепочка загрузки и подписанные параметры ядра. Swap и гибернация есть в обоих семействах: реальный swap-раздел/том + zram (приоритет 100), `resume=UUID=…` в параметрах ядра (в UKI-ветке параметр зашит в подписанный образ и правится только через пересборку + переподпись). В шифрованных редакциях swap тоже внутри контейнера: в GRUB LVM+LUKS — том LVM, в LUKS2 UKI (`luks-v1.5`) — файл на подтоме `@swap`; снимок гибернации защищён LUKS, а при пробуждении запрашивается пароль.
 >
 > ⚠️ **Secure Boot и GRUB.** GRUB из Arch не подписан, а его модули грузятся с диска непроверяемыми, поэтому GRUB-макеты Secure Boot **не поддерживают**: перед установкой выключите его и в прошивке, и в настройках ВМ (иначе неподписанный загрузчик не запустится, а ISO может быть отклонён с «Access denied»). Нужен Secure Boot — берите UKI-макет.
 >
 > 💡 **Совет для начинающих:** если не уверены, какой тип прошивки у вас, начните с `Arch UEFI.txt` или `Arch BIOS.txt`. Макеты с LUKS сложнее в восстановлении и требуют запоминания пароля.
 
-Во всех макетах корень — Btrfs с подтомами `@`, `@home`, `@log`, `@pkg`, ядро — `linux-lts`, снимки — `snapper` + `snap-pac` + `btrfs-assistant`.
+Во всех макетах корень — Btrfs с подтомами `@`, `@home`, `@log`, `@pkg` (в `BTRFS LUKS2 UKI` с `luks-v1.5` добавлен пятый подтом `@swap` — вне снимков snapper), ядро — `linux-lts`, снимки — `snapper` + `snap-pac` + `btrfs-assistant`.
 
 ---
 
@@ -128,10 +128,10 @@ git clone https://github.com/rubleiura/arch-ru && cd arch-ru
 |:---|:---|:---|:---|
 | `Arch UEFI.txt` | ESP, 1024 МБ (`ef00`) | Root Btrfs (`8300`) | Swap, 4G (`8200`) |
 | `Arch BIOS.txt` | BIOS Boot, 4 МБ (`ef02`) | Root Btrfs (`8300`) | Swap, 4G (`8200`) |
-| `BTRFS  LVM  LUKS UEFI.txt` | ESP, 1024 МБ (`ef00`) | LUKS2 → LVM, всё место | — |
-| `BTRFS  LVM  LUKS BIOS.txt` | BIOS Boot, 4 МБ (`ef02`) | `/boot`, ext4, 1 ГБ | LUKS2 → LVM, всё место (`8309`) |
-| `BTRFS  UKI Secure Boot UEFI.txt` | ESP, 1024 МБ (`ef00`) | Root Btrfs, всё место | — |
-| `BTRFS LUKS2 UKI  SecureBoot UEFI.txt` | ESP, 1024 МБ (`ef00`) | LUKS2 → Root Btrfs, всё место (`8309`) | — |
+| `BTRFS LVM LUKS UEFI.txt` | ESP, 1024 МБ (`ef00`) | LUKS2 → LVM, всё место | — |
+| `BTRFS LVM LUKS BIOS.txt` | BIOS Boot, 4 МБ (`ef02`) | `/boot`, ext4, 1 ГБ | LUKS2 → LVM, всё место (`8309`) |
+| `BTRFS UKI Secure Boot UEFI.txt` | ESP, 1024 МБ (`ef00`) | Root Btrfs, всё место минус 4G (`8300`) | Swap, 4G (`8200`) |
+| `BTRFS LUKS2 UKI SecureBoot UEFI.txt` | ESP, 1024 МБ (`ef00`) | LUKS2 → Root Btrfs, всё место (`8309`) | — (swap — файл `/swap/swapfile` внутри контейнера) |
 
 > 📏 **Запас места на ESP.** 1024 МБ хватает для штатного набора. Если планируете держать несколько ядер и старые снимки (а в UKI-макетах на ESP живут сам UKI-образ, а после `БЛОКА 13A` ещё и `vmlinuz` с `initramfs` для записей-снимков), увеличьте раздел до 2048 МБ: в `БЛОКЕ 5` замените `-n 1::+1024M` на `-n 1::+2048M`, а размер root-раздела пересчитайте.
 
@@ -163,9 +163,9 @@ git clone https://github.com/rubleiura/arch-ru && cd arch-ru
 | `linux-lts` | `linux` | Ядро | Можно оставить LTS (рекомендуется) или заменить на основное |
 | `defaults` | `ssd,noatime,…` | Параметры монтирования Btrfs | Значение подскажет `БЛОК 3` (см. ниже) |
 | `bgrt` | `spinner`, `arch-glow` | Тема plymouth | Список тем: `plymouth-set-default-theme -l` |
-| `4G` | `8G`, `16G` | Размер swap-раздела/тома | **Только GRUB-ветка.** Для гибернации — не меньше объёма RAM. В UKI-макетах токена нет (swap только в zram, размер `ram / 2`) |
+| `4G` | `8G`, `16G` | Размер swap-раздела/тома/файла | Во всех шести макетах (в UKI-ветке — с `v4.6` / `luks-v1.5`; в `BTRFS LUKS2 UKI` — размер swap-ФАЙЛА, БЛОК 7C). Для гибернации — не меньше объёма RAM |
 | `Grub Arch Linux` | `Grub` | `--bootloader-id` GRUB | **Только UEFI-редакции GRUB-ветки** (имя записи в меню прошивки) |
-| `cryptroot` | `crypt` | Имя LUKS-контейнера | **Только `BTRFS LUKS2 UKI  SecureBoot UEFI.txt`** |
+| `cryptroot` | `crypt` | Имя LUKS-контейнера | **Только `BTRFS LUKS2 UKI SecureBoot UEFI.txt`** |
 
 **Опции монтирования Btrfs из `БЛОКА 3`** (подставьте вместо токена `defaults`):
 
@@ -174,7 +174,7 @@ git clone https://github.com/rubleiura/arch-ru && cd arch-ru
 | SSD | `ssd,noatime,space_cache=v2,compress=zstd:3,discard=async` |
 | HDD | `noatime,space_cache=v2,compress=zstd:3,autodefrag` |
 
-> 📌 **Где именно заменяется `defaults`:** в `Arch UEFI.txt` и `Arch BIOS.txt` — в `БЛОКЕ 7`; в `BTRFS  LVM  LUKS …` — в `БЛОКЕ 7F`; в `BTRFS  UKI Secure Boot UEFI.txt` — в `БЛОКЕ 7A`; в `BTRFS LUKS2 UKI  SecureBoot UEFI.txt` — в `БЛОКЕ 7C`.
+> 📌 **Где именно заменяется `defaults`:** в `Arch UEFI.txt` и `Arch BIOS.txt` — в `БЛОКЕ 7`; в `BTRFS LVM LUKS …` — в `БЛОКЕ 7F`; в `BTRFS UKI Secure Boot UEFI.txt` — в `БЛОКЕ 7A`; в `BTRFS LUKS2 UKI SecureBoot UEFI.txt` — в `БЛОКЕ 7C`.
 > 📌 В LVM-редакциях в командах также встречается имя контейнера `cryptlvm` — его таблица `БЛОКА 4` не перечисляет; менять его не обязательно, но если меняете, то везде и согласованно с `rd.luks.name=…`.
 
 ### 🔹 ЭТАП 3: `[EDIT] БЛОК 6` — Точные имена разделов
@@ -187,10 +187,10 @@ git clone https://github.com/rubleiura/arch-ru && cd arch-ru
 |:---|:---|:---|:---|
 | `Arch UEFI.txt` | ESP | Root | Swap |
 | `Arch BIOS.txt` | BIOS Boot | Root | Swap |
-| `BTRFS  LVM  LUKS UEFI.txt` | ESP | LUKS/LVM | — |
-| `BTRFS  LVM  LUKS BIOS.txt` | BIOS Boot | `/boot` (ext4) | LUKS/LVM |
-| `BTRFS  UKI Secure Boot UEFI.txt` | ESP | Root | — |
-| `BTRFS LUKS2 UKI  SecureBoot UEFI.txt` | ESP | Root (LUKS2) | — |
+| `BTRFS LVM LUKS UEFI.txt` | ESP | LUKS/LVM | — |
+| `BTRFS LVM LUKS BIOS.txt` | BIOS Boot | `/boot` (ext4) | LUKS/LVM |
+| `BTRFS UKI Secure Boot UEFI.txt` | ESP | Root | — |
+| `BTRFS LUKS2 UKI SecureBoot UEFI.txt` | ESP | Root (LUKS2) | — |
 
 > 📌 **Правило безопасности:** Не заменяйте `sda1/sda2/sda3` до выполнения Блока 5! Ошибка здесь приведёт к форматированию несуществующих разделов и остановке установки.
 
@@ -200,7 +200,7 @@ git clone https://github.com/rubleiura/arch-ru && cd arch-ru
 
 После корректной замены переменных в Блоках 1, 4 и 6 выполняйте макет строго по порядку. Нумерация в двух семействах различается.
 
-### 🅰️ GRUB-ветка (`Arch UEFI.txt`, `Arch BIOS.txt`, `BTRFS  LVM  LUKS UEFI.txt`, `BTRFS  LVM  LUKS BIOS.txt`)
+### 🅰️ GRUB-ветка (`Arch UEFI.txt`, `Arch BIOS.txt`, `BTRFS LVM LUKS UEFI.txt`, `BTRFS LVM LUKS BIOS.txt`)
 
 | Этап | Блок | Где выполняется | Что делает |
 |:---|:---|:---|:---|
@@ -224,20 +224,20 @@ git clone https://github.com/rubleiura/arch-ru && cd arch-ru
 | 🏁 | `[LIVE] БЛОК 17` | Live-среда | Удаление ключей SSH live-сессии, `swapoff`, размонтирование, `poweroff` |
 | ✅ | `[SYSTEM] БЛОК 18` | Уже в системе | После первой успешной загрузки: диагностика systemd, включение тихой загрузки, первое `pacman -Syu`, проверка снимков, подтомов, таймеров, nftables и swap |
 
-### 🅱️ UKI-ветка (`BTRFS  UKI Secure Boot UEFI.txt`, `BTRFS LUKS2 UKI  SecureBoot UEFI.txt`)
+### 🅱️ UKI-ветка (`BTRFS UKI Secure Boot UEFI.txt`, `BTRFS LUKS2 UKI SecureBoot UEFI.txt`)
 
 Блоки `0`–`6`, `8`–`11`, `13`–`16` — те же по назначению. Отличия:
 
 | Блок | Где выполняется | Что делает |
 |:---|:---|:---|
-| `[LIVE] БЛОК 7` (+ `7A`) | Live-среда | Форматирование ESP, подтома Btrfs, монтирование. В шифрованной редакции — `7A` открытие контейнера, `7B` Btrfs внутри контейнера, `7C` монтирование |
-| `[CHROOT] БЛОК 12` | chroot | `linux-lts`, **systemd-boot** (`bootctl install`), сборка **UKI** через `systemd-ukify`, `/etc/kernel/cmdline` как единственный источник параметров ядра, пресет mkinitcpio с `default_uki=`, plymouth |
+| `[LIVE] БЛОК 7` (+ `7A`) | Live-среда | Форматирование ESP, подтома Btrfs, монтирование, `mkswap` + `swapon` на `sda3` (до `genfstab` — swap попадёт в fstab автоматически). В шифрованной редакции — `7A` открытие контейнера, `7B` Btrfs и подтом `@swap` внутри контейнера, `7C` монтирование и swap-ФАЙЛ (`btrfs filesystem mkswapfile` + `swapon` до `genfstab`) |
+| `[CHROOT] БЛОК 12` | chroot | `linux-lts`, **systemd-boot** (`bootctl install`), сборка **UKI** через `systemd-ukify`, `/etc/kernel/cmdline` как единственный источник параметров ядра (гибернация: `resume=UUID=<sda3>` в незашифрованной редакции; `resume=/dev/mapper/cryptroot` + `resume_offset=<offset файла>` в шифрованной), пресет mkinitcpio с `default_uki=`, plymouth |
 | `[CHROOT] БЛОК 13A` | chroot | Снимки Btrfs в меню systemd-boot (замена grub-btrfs) |
 | `[СИСТЕМА] БЛОК 13B` | Уже в системе | Возврат дерева снимков после отката через btrfs-assistant |
 | `[CHROOT] БЛОК 17` | chroot | 🔐 **Активация Secure Boot:** финальная пересборка → `sbctl create-keys` → `sbctl enroll-keys -m` → подписи |
 | `[LIVE] БЛОК 18` | Live-среда | Завершение установки: очистка ключей live-сессии, размонтирование, выключение |
 | `[LIVE-ISO] БЛОК 19` | Live-среда | 🚑 Аварийное восстановление — **есть только в шифрованной редакции и при установке ПРОПУСКАЕТСЯ** |
-| `[СИСТЕМА] БЛОК 20` | Уже в системе | После первой успешной загрузки: диагностика, тихая загрузка, `luksHeaderBackup` на внешний носитель (обязательно в шифрованной редакции), проверка снимков и меню |
+| `[СИСТЕМА] БЛОК 20` | Уже в системе | После первой успешной загрузки: диагностика (включая `ПРОВЕРКУ 4/6` — swap и готовность к гибернации), тихая загрузка, `luksHeaderBackup` на внешний носитель (обязательно в шифрованной редакции), проверка снимков и меню |
 
 > 📌 В UKI-ветке нумерация сознательно оставлена «с дырой»: за `БЛОКОМ 18` идёт `БЛОК 20`, а `БЛОК 19` — аварийный.
 
@@ -313,6 +313,8 @@ git clone https://github.com/rubleiura/arch-ru && cd arch-ru
 | `unrecognized filesystem` при монтировании | Ошибка в `/etc/fstab` | Используйте `genfstab -U /mnt`; для Btrfs должно быть `subvol=@` |
 | Wayland не работает (NVIDIA) | Отключён KMS | `nvidia-drm.modeset=1` (GRUB: в `/etc/default/grub`; UKI: в `/etc/kernel/cmdline`) + пересборка initramfs/UKI |
 | Система ушла в emergency mode (LUKS2 + UKI) | Повреждён заголовок LUKS или сменились UUID | `БЛОК 19` аварийного восстановления с live-ISO; при наличии копии заголовка — `cryptsetup luksHeaderRestore` |
+| Гибернация не работает: вместо пробуждения — обычная загрузка | `resume=…` не совпадает со swap (у LUKS2 UKI ещё и `resume_offset=` устарел — файл пересоздавали); либо swap меньше объёма RAM | `swapon --show`; `sudo cat /sys/power/resume` (у LUKS2 UKI также `sudo cat /sys/power/resume_offset`). GRUB-ветка: правка `/etc/default/grub` + `grub-mkconfig`; UKI-ветка: правка `/etc/kernel/cmdline` + `mkinitcpio -P` + `sbctl sign-all`; LUKS2 UKI: offset пересчитать через `btrfs inspect-internal map-swapfile -r /swap/swapfile` |
+| При пробуждении из гибернации в VirtualBox — чёрный экран | Виртуальный дисплей ВМ плохо восстанавливается после S4 | Сначала проверьте, жива ли ВМ: `ping`/`ssh` с хоста. Затем: отключить 3D-ускорение, Video Memory 128 МБ, тестировать `systemctl hibernate` из TTY; эталонная проверка гибернации — реальное железо |
 
 ### 📚 Путь самостоятельного изучения
 Установка Arch Linux — это не финиш, а старт. Чтобы превратить этот проект в полноценный образовательный опыт:
@@ -330,14 +332,14 @@ git clone https://github.com/rubleiura/arch-ru && cd arch-ru
  ├── 📄 README.md                                # Эта инструкция
  ├── 📄 Arch UEFI.txt                            # Базовая UEFI-установка: Btrfs + GRUB
  ├── 📄 Arch BIOS.txt                            # Базовая BIOS-установка: Btrfs + GRUB
- ├── 📄 BTRFS  LVM  LUKS UEFI.txt                # UEFI + LUKS2 + LVM + GRUB
- ├── 📄 BTRFS  LVM  LUKS BIOS.txt                # BIOS + LUKS2 + LVM + GRUB (отдельный /boot)
- ├── 📄 BTRFS  UKI Secure Boot UEFI.txt          # UEFI + systemd-boot/UKI + Secure Boot (без GRUB)
- ├── 📄 BTRFS LUKS2 UKI  SecureBoot UEFI.txt     # то же + шифрованный корень LUKS2 (без LVM)
+ ├── 📄 BTRFS LVM LUKS UEFI.txt                # UEFI + LUKS2 + LVM + GRUB
+ ├── 📄 BTRFS LVM LUKS BIOS.txt                # BIOS + LUKS2 + LVM + GRUB (отдельный /boot)
+ ├── 📄 BTRFS UKI Secure Boot UEFI.txt          # UEFI + systemd-boot/UKI + Secure Boot (без GRUB)
+ ├── 📄 BTRFS LUKS2 UKI SecureBoot UEFI.txt     # то же + шифрованный корень LUKS2 (без LVM)
  └── 📄 POST-INSTALL Arch Linux.txt # Пост-установочный чек-лист
 ```
 
-> ⚠️ В именах файлов встречаются **двойные пробелы** — при работе в терминале заключайте имя в кавычки: `nano "BTRFS  LVM  LUKS UEFI.txt"`.
+> 📌 **Имена файлов нормализованы (2026-10-11):** двойные пробелы устранены. В терминале имя по-прежнему заключайте в кавычки (пробелы в нём остались): `nano "BTRFS LVM LUKS UEFI.txt"`.
 
 ---
 
